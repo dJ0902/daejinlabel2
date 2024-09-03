@@ -14,15 +14,15 @@ function Footer() {
             </span>
           </div>
           <div class="mt-4">
-            <Link href="https://daejinlabel2.vercel.app/" target="_blank" class="text-blue-500 hover:underline">
-              https://daejinlabel2.vercel.app
+            <Link href="https://7sunglabels.vercel.app/" target="_blank" class="text-blue-500 hover:underline">
+              https://7sunglabels.vercel.app/
             </Link>
           </div>
         </div>
-        <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+        {/* <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
         <span class="block text-center text-sm text-gray-500 sm:text-center dark:text-gray-400">
           © 2024 DAEJIN I&T All Rights Reserved.
-        </span>
+        </span> */}
       </div>
     </footer>
   );
