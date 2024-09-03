@@ -9,7 +9,7 @@ import ReactCrop, {
 } from 'react-image-crop'
 import { canvasPreview } from './canvasPreview'
 import { useDebounceEffect } from './useDebounceEffect'
-
+import { Button } from '@nextui-org/react'
 import 'react-image-crop/dist/ReactCrop.css'
 
 // This is to demonstate how to make and center a % aspect crop
@@ -154,36 +154,15 @@ export default function ImageCropper() {
 
   return (
     <div className="App">
-      <div className="Crop-Controls">
-        <input type="file" accept="image/*" onChange={onSelectFile} />
-        <div>
-          <label htmlFor="scale-input">Scale: </label>
-          <input
-            id="scale-input"
-            type="number"
-            step="0.1"
-            value={scale}
-            disabled={!imgSrc}
-            onChange={(e) => setScale(Number(e.target.value))}
-          />
-        </div>
-        <div>
-          <label htmlFor="rotate-input">Rotate: </label>
-          <input
-            id="rotate-input"
-            type="number"
-            value={rotate}
-            disabled={!imgSrc}
-            onChange={(e) =>
-              setRotate(Math.min(180, Math.max(-180, Number(e.target.value))))
-            }
-          />
-        </div>
-        <div>
-          <button onClick={handleToggleAspectClick}>
-            Toggle aspect {aspect ? 'off' : 'on'}
-          </button>
-        </div>
+      <div className="Crop-Controls flex flex-col justify-center items-center">
+        <Button color="primary" onClick={() => document.querySelector('input[type="file"]').click()}>
+          이미지 선택
+        </Button>
+        <input className='hidden' type="file" accept="image/*" onChange={onSelectFile} />
+        
+      </div>
+      <div>
+        
       </div>
       {!!imgSrc && (
         <ReactCrop

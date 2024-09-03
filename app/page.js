@@ -1,8 +1,8 @@
 import Image from "next/image";
-import ImageCropper from "@/app/compoenents/ImageCropper";
-import Carousel from "@/app/compoenents/Carousel";
+import ImageCropper from "@/app/components/ImageCropper";
+import Carousel from "@/app/components/Carousel";
 import Script from "next/script";
-import CardSection from "@/app/compoenents/CardSection";
+import CardSection from "@/app/components/CardSection";
 export default function Home() {
   return (
     <div>
