@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 function Footer() {
   return (
     <footer class=" rounded-lg dark:bg-gray-900 m-4 w-screen md:w-1/2">
@@ -10,6 +10,11 @@ function Footer() {
             <span class="text-black font-bold text-2xl">
               QR코드
             </span>
+          </div>
+          <div class="mt-4">
+            <Link href="https://daejinlabel2.vercel.app/" target="_blank" class="text-blue-500 hover:underline">
+              https://daejinlabel2.vercel.app
+            </Link>
           </div>
         </div>
         <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
