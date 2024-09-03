@@ -5,13 +5,13 @@ function Footer() {
     <footer class=" rounded-lg m-4 w-screen md:w-1/2">
       <div class="w-full mx-auto p-4 md:py-8">
         <div class="flex flex-col justify-center items-center">
-          <a href="/images/qr.png" download>
+          {/* <a href="/images/qr.png" download>
             <img src="/images/qr.png" alt="logo" class=" w-[60vw] md:w-[20vw]  h-[60vw] md:h-[20vw]" />
-          </a>
+          </a> */}
           <div>
-            <span class="text-black font-bold text-2xl">
+            {/* <span class="text-black font-bold text-2xl">
               QR코드
-            </span>
+            </span> */}
           </div>
           <div class="mt-4">
             <Link href="https://7sunglabels.vercel.app/" target="_blank" class="text-blue-500 hover:underline">
