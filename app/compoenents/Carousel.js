@@ -29,7 +29,7 @@ function Carousel() {
 
   return (
     <div
-      class="relative"
+      class="relative mt-10"
       tabindex="-1"
       uk-slider="autoplay: true;finite: false;autoplayInterval:2000"
     >

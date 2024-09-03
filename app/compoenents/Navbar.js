@@ -40,7 +40,7 @@ export default function Nav(props) {
       {/* Left Content */}
       <Link href="/">
         <NavbarBrand>
-          <span className="ml-2 text-2xl font-bold">커스텀 라벨</span>
+          <span className="ml-2 text-2xl font-bold text-black">커스텀 라벨</span>
         </NavbarBrand>
       </Link>
 
