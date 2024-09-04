@@ -5,7 +5,7 @@ import Script from "next/script";
 import CardSection from "@/app/components/CardSection";
 export default function Home() {
   return (
-    <div>
+    <div className="w-[90vw] md:w-[50vw] h-auto">
       {/* <Carousel></Carousel> */}
       <CardSection></CardSection>
     </div>
