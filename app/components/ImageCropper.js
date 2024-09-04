@@ -57,10 +57,9 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
   }
 
   function onImageLoad(e) {
-    if (aspect) {
-      const { width, height } = e.currentTarget
-      setCrop(centerAspectCrop(width, height, aspect))
-    }
+    const { width, height } = e.currentTarget
+    const crop = centerAspectCrop(width, height, 16 / 9)
+    setCrop(crop)
   }
 
   async function onDownloadCropClick() {
@@ -187,9 +186,7 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
             onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={(c) => setCompletedCrop(c)}
             aspect={aspect}
-            // minWidth={400}
             minHeight={100}
-            // circularCrop
           >
             <img
               ref={imgRef}

@@ -19,6 +19,7 @@ function Page() {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [completedCrop, setCompletedCrop] = useState()
   const imgRef = useRef(null)
+  const backgroundRef = useRef(null);
 
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
@@ -53,6 +54,49 @@ function Page() {
           }
         }, 'image/jpeg');
       }
+    }
+  };
+
+  const handleSaveImage = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (ctx && backgroundRef.current) {
+      const bgImg = backgroundRef.current.querySelector('img');
+      canvas.width = bgImg.width;
+      canvas.height = bgImg.height;
+      
+      // Draw background image
+      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+      
+      // Draw uploaded image if exists
+      if (uploadedImage) {
+        const uploadedImg = backgroundRef.current.querySelector('img:nth-child(2)');
+        const rect = uploadedImg.getBoundingClientRect();
+        const parentRect = backgroundRef.current.getBoundingClientRect();
+        
+        ctx.drawImage(
+          uploadedImg,
+          rect.left - parentRect.left,
+          rect.top - parentRect.top,
+          rect.width,
+          rect.height
+        );
+      }
+      
+      // Convert canvas to blob and trigger download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'combined_image.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
     }
   };
 
@@ -91,14 +135,14 @@ function Page() {
           )}
         </ModalContent>
       </Modal>
-      <div className="relative w-full h-auto">
+      <div className="relative w-full h-auto" ref={backgroundRef}>
         <img
           alt="Background Image"
           src="/images/background1.jpg"
           className="object-cover w-full h-full rounded-2xl"
         />
         {uploadedImage && (
-          <Draggable>
+          <Draggable bounds="parent">
             <img
               src={uploadedImage}
               alt="Uploaded Image"
@@ -113,7 +157,7 @@ function Page() {
         <Button color="primary" onClick={onOpen}>
           사진업로드
         </Button>
-        <Button color="primary">저장하기</Button>
+        <Button color="primary" onClick={handleSaveImage}>저장하기</Button>
       </div>
     </div>
   );
