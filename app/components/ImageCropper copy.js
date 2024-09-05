@@ -34,34 +34,32 @@ function centerAspectCrop(
   )
 }
 
-export default function ImageCropper() {
-  const [imgSrc, setImgSrc] = useState('')
+export default function ImageCropper({uploadedImage, setUploadedImage,handleConfirmClick,imgRef,setCompletedCrop,completedCrop}) {
   const previewCanvasRef = useRef(null)
-  const imgRef = useRef(null)
+  // const imgRef = useRef(null)
   const hiddenAnchorRef = useRef(null)
   const blobUrlRef = useRef('')
   const [crop, setCrop] = useState()
-  const [completedCrop, setCompletedCrop] = useState()
+  // const [completedCrop, setCompletedCrop] = useState()
   const [scale, setScale] = useState(1)
   const [rotate, setRotate] = useState(0)
-  const [aspect, setAspect] = useState(16 / 9)
+  const [aspect, setAspect] = useState(undefined)
 
   function onSelectFile(e) {
     if (e.target.files && e.target.files.length > 0) {
       setCrop(undefined) // Makes crop preview update between images.
       const reader = new FileReader()
       reader.addEventListener('load', () =>
-        setImgSrc(reader.result?.toString() || ''),
+        setUploadedImage(reader.result?.toString() || ''),
       )
       reader.readAsDataURL(e.target.files[0])
     }
   }
 
   function onImageLoad(e) {
-    if (aspect) {
-      const { width, height } = e.currentTarget
-      setCrop(centerAspectCrop(width, height, aspect))
-    }
+    const { width, height } = e.currentTarget
+    const crop = centerAspectCrop(width, height, 16 / 9)
+    setCrop(crop)
   }
 
   async function onDownloadCropClick() {
@@ -136,87 +134,42 @@ export default function ImageCropper() {
     [completedCrop, scale, rotate],
   )
 
-  function handleToggleAspectClick() {
-    if (aspect) {
-      setAspect(undefined)
-    } else {
-      setAspect(16 / 9)
-
-      if (imgRef.current) {
-        const { width, height } = imgRef.current
-        const newCrop = centerAspectCrop(width, height, 16 / 9)
-        setCrop(newCrop)
-        // Updates the preview
-        setCompletedCrop(convertToPixelCrop(newCrop, width, height))
-      }
-    }
-  }
 
   return (
-    <div className="App">
-      <div className="Crop-Controls flex flex-col justify-center items-center">
+    <div className="App flex flex-col justify-center items-center gap-y-5">
+      <div className="Crop-Controls flex flex-col justify-center items-center gap-y-5">
         <Button color="primary" onClick={() => document.querySelector('input[type="file"]').click()}>
           이미지 선택
         </Button>
         <input className='hidden' type="file" accept="image/*" onChange={onSelectFile} />
-        
       </div>
-      <div>
-        
-      </div>
-      {!!imgSrc && (
-        <ReactCrop
-          crop={crop}
-          onChange={(_, percentCrop) => setCrop(percentCrop)}
-          onComplete={(c) => setCompletedCrop(c)}
-          aspect={aspect}
-          // minWidth={400}
-          minHeight={100}
-          // circularCrop
-        >
-          <img
-            ref={imgRef}
-            alt="Crop me"
-            src={imgSrc}
-            style={{ transform: `scale(${scale}) rotate(${rotate}deg)` }}
-            onLoad={onImageLoad}
-          />
-        </ReactCrop>
-      )}
-      {!!completedCrop && (
-        <>
-          <div>
-            <canvas
-              ref={previewCanvasRef}
-              style={{
-                border: '1px solid black',
-                objectFit: 'contain',
-                width: completedCrop.width,
-                height: completedCrop.height,
-              }}
+      <div className='flex justify-center items-center w-full h-auto'>
+        {!!uploadedImage ? (
+          <ReactCrop
+            crop={crop}
+            onChange={(_, percentCrop) => setCrop(percentCrop)}
+            onComplete={(c) => setCompletedCrop(c)}
+            aspect={aspect}
+            minHeight={100}
+          >
+            <img
+              ref={imgRef}
+              alt="Crop me"
+              src={uploadedImage}
+              style={{ transform: `scale(${scale}) rotate(${rotate}deg)` }}
+              onLoad={onImageLoad}
             />
-          </div>
-          <div>
-            <button onClick={onDownloadCropClick}>Download Crop</button>
-            <div style={{ fontSize: 12, color: '#666' }}>
-              If you get a security error when downloading try opening the
-              Preview in a new tab (icon near top right).
-            </div>
-            <a
-              href="#hidden"
-              ref={hiddenAnchorRef}
-              download
-              style={{
-                position: 'absolute',
-                top: '-200vh',
-                visibility: 'hidden',
-              }}
-            >
-              Hidden download
-            </a>
-          </div>
-        </>
-      )}
+          </ReactCrop>
+        ):(
+          <img src="/images/noimage.jpg" alt="Crop me" />
+        )}
+      </div>
+      {/* {!!completedCrop && (
+        <Button color="primary" onClick={handleConfirmClick}>
+          확인
+        </Button>
+      )} */}
+      
     </div>
   )
 }

@@ -13,7 +13,7 @@ import {
 } from "@nextui-org/react";
 import ImageCropper from "../../components/ImageCropper";
 import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
-import { MdCancel } from "react-icons/md";
+
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -147,19 +147,11 @@ function Page() {
         />
         {uploadedImage && (
           <Draggable bounds="parent">
-            <div className="absolute top-0 left-0 w-1/2 h-auto cursor-move">
-              <img
-                src={uploadedImage}
-                alt="Uploaded Image"
-                className="w-full h-full opacity-50"
-              />
-              <button
-                className="absolute top-0 right-0  rounded-full p-1"
-                onClick={() => setUploadedImage(null)}
-              >
-                <MdCancel className="text-2xl text-red-500"/>
-              </button>
-            </div>
+            <img
+              src={uploadedImage}
+              alt="Uploaded Image"
+              className="absolute top-0 left-0 w-1/2 h-auto cursor-move opacity-50"
+            />
           </Draggable>
         )}
       </div>
@@ -169,6 +161,11 @@ function Page() {
         <Button color="primary" onClick={onOpen}>
           사진업로드
         </Button>
+        {uploadedImage && (
+          <Button color="danger" onClick={() => setUploadedImage(null)}>
+            이미지삭제
+          </Button>
+        )}
         <Button color="primary" onClick={handleSaveImage}>
           저장하기
         </Button>

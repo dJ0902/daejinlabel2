@@ -134,42 +134,6 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
     [completedCrop, scale, rotate],
   )
 
-  // const handleConfirmClick = () => {
-  //   if (imgRef.current && completedCrop) {
-  //     const canvas = document.createElement('canvas');
-  //     const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
-  //     const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
-  //     canvas.width = completedCrop.width * scaleX;
-  //     canvas.height = completedCrop.height * scaleY;
-  //     const ctx = canvas.getContext('2d');
-
-  //     if (ctx) {
-  //       ctx.drawImage(
-  //         imgRef.current,
-  //         completedCrop.x * scaleX,
-  //         completedCrop.y * scaleY,
-  //         completedCrop.width * scaleX,
-  //         completedCrop.height * scaleY,
-  //         0,
-  //         0,
-  //         completedCrop.width * scaleX,
-  //         completedCrop.height * scaleY
-  //       );
-
-  //       // Convert canvas to blob and then to base64
-  //       canvas.toBlob((blob) => {
-  //         if (blob) {
-  //           const reader = new FileReader();
-  //           reader.onloadend = () => {
-  //             setUploadedImage(reader.result);
-  //           };
-  //           reader.readAsDataURL(blob);
-  //         }
-  //       }, 'image/jpeg');
-  //     }
-  //   }
-  //   onConfirm();
-  // };
 
   return (
     <div className="App flex flex-col justify-center items-center gap-y-5">
