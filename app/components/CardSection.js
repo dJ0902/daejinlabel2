@@ -7,28 +7,13 @@ export default function CardSection() {
   const list = [
     {
       title: "처음처럼",
-      img: "/images/background1.jpg",
+      img: "/images/background1.png",
       price: "$5.50",
-    },
-    {
-      title: "크러시",
-      img: "/images/noimage.jpg",
-      price: "$3.00",
-    },
-    {
-      title: "새로",
-      img: "/images/noimage.jpg",
-      price: "$10.00",
-    },
-    {
-      title: "새로살구",
-      img: "/images/noimage.jpg",
-      price: "$5.30",
-    },
+    }
   ];
 
   return (
-    <div className="w-full h-full gap-5 grid grid-cols-2 sm:grid-cols-2">
+    <div className="w-full h-full gap-5 grid grid-cols-1 sm:grid-cols-1">
       {list.map((item, index) => (
         <Card
           shadow="sm"

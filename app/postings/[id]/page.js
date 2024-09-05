@@ -13,22 +13,22 @@ import {
 } from "@nextui-org/react";
 import ImageCropper from "../../components/ImageCropper";
 import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
-
+import { MdCancel } from "react-icons/md";
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
-  const [completedCrop, setCompletedCrop] = useState()
-  const imgRef = useRef(null)
+  const [completedCrop, setCompletedCrop] = useState();
+  const imgRef = useRef(null);
   const backgroundRef = useRef(null);
 
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
       const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
       canvas.width = completedCrop.width * scaleX;
       canvas.height = completedCrop.height * scaleY;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
 
       if (ctx) {
         ctx.drawImage(
@@ -52,29 +52,30 @@ function Page() {
             };
             reader.readAsDataURL(blob);
           }
-        }, 'image/jpeg');
+        }, "image/jpeg");
       }
     }
   };
 
   const handleSaveImage = () => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
     if (ctx && backgroundRef.current) {
-      const bgImg = backgroundRef.current.querySelector('img');
+      const bgImg = backgroundRef.current.querySelector("img");
       canvas.width = bgImg.width;
       canvas.height = bgImg.height;
-      
+
       // Draw background image
       ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-      
+
       // Draw uploaded image if exists
       if (uploadedImage) {
-        const uploadedImg = backgroundRef.current.querySelector('img:nth-child(2)');
+        const uploadedImg =
+          backgroundRef.current.querySelector("img:nth-child(2)");
         const rect = uploadedImg.getBoundingClientRect();
         const parentRect = backgroundRef.current.getBoundingClientRect();
-        
+
         ctx.drawImage(
           uploadedImg,
           rect.left - parentRect.left,
@@ -83,20 +84,20 @@ function Page() {
           rect.height
         );
       }
-      
+
       // Convert canvas to blob and trigger download
       canvas.toBlob((blob) => {
         if (blob) {
           const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
+          const a = document.createElement("a");
           a.href = url;
-          a.download = 'combined_image.png';
+          a.download = "combined_image.png";
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
         }
-      }, 'image/png');
+      }, "image/png");
     }
   };
 
@@ -124,10 +125,13 @@ function Page() {
                 <Button color="danger" variant="light" onPress={onClose}>
                   취소
                 </Button>
-                <Button color="primary" onPress={() => { 
-                  handleConfirmClick();
-                  onClose();
-                }}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    handleConfirmClick();
+                    onClose();
+                  }}
+                >
                   확인
                 </Button>
               </ModalFooter>
@@ -138,16 +142,24 @@ function Page() {
       <div className="relative w-full h-auto" ref={backgroundRef}>
         <img
           alt="Background Image"
-          src="/images/background1.jpg"
+          src="/images/background1.png"
           className="object-cover w-full h-full rounded-2xl"
         />
         {uploadedImage && (
           <Draggable bounds="parent">
-            <img
-              src={uploadedImage}
-              alt="Uploaded Image"
-              className="absolute top-0 left-0 w-1/2 h-auto cursor-move"
-            />
+            <div className="absolute top-0 left-0 w-1/2 h-auto cursor-move">
+              <img
+                src={uploadedImage}
+                alt="Uploaded Image"
+                className="w-full h-full opacity-50"
+              />
+              <button
+                className="absolute top-0 right-0  rounded-full p-1"
+                onClick={() => setUploadedImage(null)}
+              >
+                <MdCancel className="text-2xl text-red-500"/>
+              </button>
+            </div>
           </Draggable>
         )}
       </div>
@@ -157,11 +169,12 @@ function Page() {
         <Button color="primary" onClick={onOpen}>
           사진업로드
         </Button>
-        <Button color="primary" onClick={handleSaveImage}>저장하기</Button>
+        <Button color="primary" onClick={handleSaveImage}>
+          저장하기
+        </Button>
       </div>
     </div>
   );
 }
 
 export default Page;
-
