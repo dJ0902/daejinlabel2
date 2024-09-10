@@ -3,3 +3,29 @@
 @tailwind utilities;
 
 
+@font-face {
+  font-family: 'YoonDokrip';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/YoonDokrip.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'YoonManse';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/YoonManse.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'YoonDaehanB';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/YoonDaehanB.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'YoonMingukB';
+  
+  src: url('/fonts/YoonMingukB.ttf') format('truetype');
+} 

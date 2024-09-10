@@ -12,8 +12,6 @@ import { useDebounceEffect } from './useDebounceEffect'
 import { Button } from '@nextui-org/react'
 import 'react-image-crop/dist/ReactCrop.css'
 
-// This is to demonstate how to make and center a % aspect crop
-// which is a bit trickier so we use some helper functions.
 function centerAspectCrop(
   mediaWidth,
   mediaHeight,

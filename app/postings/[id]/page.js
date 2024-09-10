@@ -18,8 +18,11 @@ function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
   const [completedCrop, setCompletedCrop] = useState();
+  const [title, setTitle] = useState("");
+  const [draggedPosition, setDraggedPosition] = useState({ x: 0, y: 0 });
   const imgRef = useRef(null);
   const backgroundRef = useRef(null);
+  const uploadedImgRef = useRef(null);
 
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
@@ -52,53 +55,65 @@ function Page() {
             };
             reader.readAsDataURL(blob);
           }
-        }, "image/jpeg");
+        }, "image/png"); // Change to "image/png" to maintain transparency
       }
     }
   };
 
   const handleSaveImage = () => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    if (backgroundRef.current && uploadedImage && uploadedImgRef.current) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const backgroundImg = new window.Image(); // Use native Image constructor
+      const uploadedImg = new window.Image(); // Use native Image constructor
 
-    if (ctx && backgroundRef.current) {
-      const bgImg = backgroundRef.current.querySelector("img");
-      canvas.width = bgImg.width;
-      canvas.height = bgImg.height;
+      backgroundImg.src = "/images/background1.png";
+      uploadedImg.src = uploadedImage;
 
-      // Draw background image
-      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+      backgroundImg.onload = () => {
+        canvas.width = backgroundImg.width;
+        canvas.height = backgroundImg.height;
+        ctx.drawImage(backgroundImg, 0, 0);
 
-      // Draw uploaded image if exists
-      if (uploadedImage) {
-        const uploadedImg =
-          backgroundRef.current.querySelector("img:nth-child(2)");
-        const rect = uploadedImg.getBoundingClientRect();
-        const parentRect = backgroundRef.current.getBoundingClientRect();
+        uploadedImg.onload = () => {
+          const scaleX = backgroundImg.width / backgroundRef.current.offsetWidth;
+          const scaleY = backgroundImg.height / backgroundRef.current.offsetHeight;
+          const x = draggedPosition.x * scaleX;
+          const y = draggedPosition.y * scaleY;
+          const width = uploadedImgRef.current.width * scaleX;
+          const height = uploadedImgRef.current.height * scaleY;
 
-        ctx.drawImage(
-          uploadedImg,
-          rect.left - parentRect.left,
-          rect.top - parentRect.top,
-          rect.width,
-          rect.height
-        );
-      }
+          ctx.drawImage(uploadedImg, x, y, width, height);
 
-      // Convert canvas to blob and trigger download
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "combined_image.png";
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }
-      }, "image/png");
+          // Calculate the position of the title text
+          const titleElement = document.querySelector('.title-text');
+          const titleRect = titleElement.getBoundingClientRect();
+          const backgroundRect = backgroundRef.current.getBoundingClientRect();
+          const titleX = (titleRect.left - backgroundRect.left) * scaleX;
+          const titleY = (titleRect.top - backgroundRect.top) * scaleY + titleRect.height * scaleY / 2;
+
+          // Draw the title text
+          ctx.font = "62px YoonDokrip";
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center";
+          ctx.fillText(title, titleX, titleY);
+
+          // Convert canvas to blob and then to base64
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const link = document.createElement("a");
+              link.href = URL.createObjectURL(blob);
+              link.download = "overlayed_image.png"; // Change to .png to maintain transparency
+              link.click();
+            }
+          }, "image/png"); // Change to "image/png" to maintain transparency
+        };
+      };
     }
+  };
+
+  const handleDragStop = (e, data) => {
+    setDraggedPosition({ x: data.x, y: data.y });
   };
 
   return (
@@ -140,14 +155,22 @@ function Page() {
         </ModalContent>
       </Modal>
       <div className="relative w-full h-auto" ref={backgroundRef}>
+        <div
+          className="title-text w-full flex justify-center items-center absolute top-2.5 left-1/2 transform -translate-x-1/2 text-[62px] text-black"
+          style={{ fontFamily: "YoonDokrip", fontWeight: 700 }}
+        >
+          {title}
+        </div>
+
         <img
           alt="Background Image"
           src="/images/background1.png"
           className="object-cover w-full h-full rounded-2xl"
         />
         {uploadedImage && (
-          <Draggable bounds="parent">
+          <Draggable bounds="parent" onStop={handleDragStop}>
             <img
+              ref={uploadedImgRef}
               src={uploadedImage}
               alt="Uploaded Image"
               className="absolute top-0 left-0 w-1/2 h-auto cursor-move opacity-50"
@@ -156,7 +179,7 @@ function Page() {
         )}
       </div>
 
-      <Input type="email" label="상단 출력 문구" />
+      <Input value={title} onChange={(e) => setTitle(e.target.value)} type="email" label="상단 출력 문구" />
       <div className="flex gap-x-5 justify-center items-center w-full">
         <Button color="primary" onClick={onOpen}>
           사진업로드

@@ -69,9 +69,6 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
       throw new Error('Crop canvas does not exist')
     }
 
-    // This will size relative to the uploaded image
-    // size. If you want to size according to what they
-    // are looking at on screen, remove scaleX + scaleY
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
 
@@ -79,10 +76,13 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
       completedCrop.width * scaleX,
       completedCrop.height * scaleY,
     )
-    const ctx = offscreen.getContext('2d')
+    const ctx = offscreen.getContext('2d', { alpha: true }) // Ensure alpha channel is enabled
     if (!ctx) {
       throw new Error('No 2d context')
     }
+
+    // Clear the canvas to ensure transparency
+    ctx.clearRect(0, 0, offscreen.width, offscreen.height)
 
     ctx.drawImage(
       previewCanvas,
@@ -95,10 +95,8 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
       offscreen.width,
       offscreen.height,
     )
-    // You might want { type: "image/jpeg", quality: <0 to 1> } to
-    // reduce image size
     const blob = await offscreen.convertToBlob({
-      type: 'image/png',
+      type: 'image/png', // Ensure the image format supports transparency
     })
 
     if (blobUrlRef.current) {

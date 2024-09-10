@@ -1,0 +1,19 @@
+{
+  "configurations": [
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "automailing:main.handler (python3.11)",
+      "invokeTarget": {
+        "target": "code",
+        "projectRoot": "${workspaceFolder}/automailing",
+        "lambdaHandler": "main.handler"
+      },
+      "lambda": {
+        "runtime": "python3.11",
+        "payload": {},
+        "environmentVariables": {}
+      }
+    }
+  ]
+}
