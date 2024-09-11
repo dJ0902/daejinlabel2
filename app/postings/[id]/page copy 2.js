@@ -89,13 +89,11 @@ function Page() {
           const titleElement = document.querySelector('.title-text');
           const titleRect = titleElement.getBoundingClientRect();
           const backgroundRect = backgroundRef.current.getBoundingClientRect();
-          // const scaleXX = 1000;
-          
-          const titleX = backgroundImg.width / 2;
-          const titleY = backgroundImg.height *4/13;
-          
+          const titleX = (titleRect.left - backgroundRect.left) * scaleX;
+          const titleY = (titleRect.top - backgroundRect.top) * scaleY + titleRect.height * scaleY / 2;
+
           // Draw the title text
-          ctx.font = "1000px YoonDokrip";
+          ctx.font = "62px YoonDokrip";
           ctx.fillStyle = "black";
           ctx.textAlign = "center";
           ctx.fillText(title, titleX, titleY);
@@ -181,12 +179,7 @@ function Page() {
         )}
       </div>
 
-      <Input
-        value={title.length > 5 ? title.substring(0, 5) : title}
-        onChange={(e) => setTitle(e.target.value.length > 5 ? e.target.value.substring(0, 5) : e.target.value)}
-        type="email"
-        label="상단 출력 문구"
-      />
+      <Input value={title} onChange={(e) => setTitle(e.target.value)} type="email" label="상단 출력 문구" />
       <div className="flex gap-x-5 justify-center items-center w-full">
         <Button color="primary" onClick={onOpen}>
           사진업로드
