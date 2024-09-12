@@ -13,7 +13,7 @@ import {
 } from "@nextui-org/react";
 import ImageCropper from "../../components/ImageCropper";
 import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
-
+import {usePathname} from "next/navigation";
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -23,6 +23,7 @@ function Page() {
   const imgRef = useRef(null);
   const backgroundRef = useRef(null);
   const uploadedImgRef = useRef(null);
+  const pathname = usePathname();
 
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
@@ -61,62 +62,67 @@ function Page() {
   };
 
   const handleSaveImage = () => {
-    if (backgroundRef.current && uploadedImage && uploadedImgRef.current) {
+    if (backgroundRef.current) {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      const backgroundImg = new window.Image(); // Use native Image constructor
-      const uploadedImg = new window.Image(); // Use native Image constructor
+      const backgroundImg = new window.Image();
 
-      backgroundImg.src = "/images/background1.png";
-      uploadedImg.src = uploadedImage;
+      backgroundImg.src = `/images/background${parseInt(pathname.split('/').pop()) + 1}.png`;
 
       backgroundImg.onload = () => {
         canvas.width = backgroundImg.width;
         canvas.height = backgroundImg.height;
         ctx.drawImage(backgroundImg, 0, 0);
 
-        uploadedImg.onload = () => {
-          const scaleX = backgroundImg.width / backgroundRef.current.offsetWidth;
-          const scaleY = backgroundImg.height / backgroundRef.current.offsetHeight;
-          const x = draggedPosition.x * scaleX;
-          const y = draggedPosition.y * scaleY;
-          const width = uploadedImgRef.current.width * scaleX;
-          const height = uploadedImgRef.current.height * scaleY;
+        // Draw the uploaded image if it exists
+        if (uploadedImage && uploadedImgRef.current) {
+          const uploadedImg = new window.Image();
+          uploadedImg.src = uploadedImage;
 
-          ctx.drawImage(uploadedImg, x, y, width, height);
+          uploadedImg.onload = () => {
+            const scaleX = backgroundImg.width / backgroundRef.current.offsetWidth;
+            const scaleY = backgroundImg.height / backgroundRef.current.offsetHeight;
+            const x = draggedPosition.x * scaleX;
+            const y = draggedPosition.y * scaleY;
+            const width = uploadedImgRef.current.width * scaleX;
+            const height = uploadedImgRef.current.height * scaleY;
 
-          // Calculate the position of the title text
-          const titleElement = document.querySelector('.title-text');
-          const titleRect = titleElement.getBoundingClientRect();
-          const backgroundRect = backgroundRef.current.getBoundingClientRect();
-          // const scaleXX = 1000;
-          
-          const titleX = backgroundImg.width / 2;
-          const titleY = backgroundImg.height *4/13;
-          
-          // Draw the title text
-          ctx.font = "1000px YoonDokrip";
-          ctx.fillStyle = "black";
-          ctx.textAlign = "center";
-          ctx.fillText(title, titleX, titleY);
-
-          // Convert canvas to blob and then to base64
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const link = document.createElement("a");
-              link.href = URL.createObjectURL(blob);
-              link.download = "overlayed_image.png"; // Change to .png to maintain transparency
-              link.click();
-            }
-          }, "image/png"); // Change to "image/png" to maintain transparency
-        };
+            ctx.drawImage(uploadedImg, x, y, width, height);
+            drawTitleAndSave();
+          };
+        } else {
+          drawTitleAndSave();
+        }
       };
+
+      function drawTitleAndSave() {
+        // Calculate the position of the title text
+        const titleX = backgroundImg.width / 2;
+        const titleY = backgroundImg.height * 4 / 13;
+        
+        // Draw the title text
+        ctx.font = "1000px YoonDokrip";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText(title, titleX, titleY);
+
+        // Convert canvas to blob and then to base64
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "overlayed_image.png";
+            link.click();
+          }
+        }, "image/png");
+      }
     }
   };
 
   const handleDragStop = (e, data) => {
     setDraggedPosition({ x: data.x, y: data.y });
   };
+  console.log('pathname:',pathname)
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -166,7 +172,7 @@ function Page() {
 
         <img
           alt="Background Image"
-          src="/images/background1.png"
+          src={`/images/background${parseInt(pathname.split('/').pop()) + 1}.png`}
           className="object-cover w-full h-full rounded-2xl"
         />
         {uploadedImage && (
@@ -188,9 +194,12 @@ function Page() {
         label="상단 출력 문구"
       />
       <div className="flex gap-x-5 justify-center items-center w-full">
-        <Button color="primary" onClick={onOpen}>
-          사진업로드
-        </Button>
+        
+        {pathname.split('/').pop() === '0' && (
+          <Button color="primary" onClick={onOpen}>
+            사진업로드
+          </Button>
+        )}
         {uploadedImage && (
           <Button color="danger" onClick={() => setUploadedImage(null)}>
             이미지삭제
