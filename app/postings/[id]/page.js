@@ -14,6 +14,8 @@ import {
 import ImageCropper from "../../components/ImageCropper";
 import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
 import { usePathname } from "next/navigation";
+import { IoIosArrowBack } from "react-icons/io";
+import { useRouter } from "next/navigation";
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -24,7 +26,8 @@ function Page() {
   const backgroundRef = useRef(null);
   const uploadedImgRef = useRef(null);
   const pathname = usePathname();
-
+  const router = useRouter();
+  
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
       const canvas = document.createElement("canvas");
@@ -188,7 +191,9 @@ function Page() {
   const handleDragStop = (e, data) => {
     setDraggedPosition({ x: data.x, y: data.y });
   };
-  console.log("pathname:", pathname);
+  const handleArrowBack = () => {
+    router.push("/");
+  };
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -228,6 +233,10 @@ function Page() {
           )}
         </ModalContent>
       </Modal>
+      <div onClick={handleArrowBack} className="absolute top-5 left-5">
+      <IoIosArrowBack className="text-3xl cursor-pointer"/>
+      </div>
+      
       <div className="relative w-full h-auto" ref={backgroundRef}>
         {pathname.split("/").pop() === "0" && (
           <div

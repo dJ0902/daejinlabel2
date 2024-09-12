@@ -21,7 +21,7 @@ export default function CardSection() {
       price: "$5.50",
     },
     {
-      title: "크럿",
+      title: "크러시",
       img: "/images/background4.png",
       price: "$5.50",
     }
