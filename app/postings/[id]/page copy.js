@@ -141,9 +141,15 @@ function Page() {
         </ModalContent>
       </Modal>
       <div className="relative w-full h-auto" ref={backgroundRef}>
-        <div
+        {/* <div
           className="w-full flex justify-center items-center absolute top-0 left-1/2 transform -translate-x-1/2 text-[64px] text-black"
           style={{ fontFamily: "YoonDokrip" }}
+        >
+          {title}
+        </div> */}
+        <div
+          className="w-full flex justify-center items-center absolute top-0 left-1/2 transform -translate-x-1/2 text-[64px] text-black"
+          
         >
           {title}
         </div>

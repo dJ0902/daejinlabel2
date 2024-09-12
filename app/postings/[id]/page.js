@@ -13,7 +13,7 @@ import {
 } from "@nextui-org/react";
 import ImageCropper from "../../components/ImageCropper";
 import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -67,7 +67,9 @@ function Page() {
       const ctx = canvas.getContext("2d");
       const backgroundImg = new window.Image();
 
-      backgroundImg.src = `/images/background${parseInt(pathname.split('/').pop()) + 1}.png`;
+      backgroundImg.src = `/images/background${
+        parseInt(pathname.split("/").pop()) + 1
+      }.png`;
 
       backgroundImg.onload = () => {
         canvas.width = backgroundImg.width;
@@ -80,8 +82,10 @@ function Page() {
           uploadedImg.src = uploadedImage;
 
           uploadedImg.onload = () => {
-            const scaleX = backgroundImg.width / backgroundRef.current.offsetWidth;
-            const scaleY = backgroundImg.height / backgroundRef.current.offsetHeight;
+            const scaleX =
+              backgroundImg.width / backgroundRef.current.offsetWidth;
+            const scaleY =
+              backgroundImg.height / backgroundRef.current.offsetHeight;
             const x = draggedPosition.x * scaleX;
             const y = draggedPosition.y * scaleY;
             const width = uploadedImgRef.current.width * scaleX;
@@ -96,15 +100,77 @@ function Page() {
       };
 
       function drawTitleAndSave() {
-        // Calculate the position of the title text
-        const titleX = backgroundImg.width / 2;
-        const titleY = backgroundImg.height * 4 / 13;
-        
-        // Draw the title text
-        ctx.font = "1000px YoonDokrip";
-        ctx.fillStyle = "black";
-        ctx.textAlign = "center";
-        ctx.fillText(title, titleX, titleY);
+        // Calculate the position of the title text based on the pathname
+        const pathEnd = pathname.split("/").pop();
+        let titleX,
+          titleY,
+          fontSize,
+          fontFamily,
+          fontWeight,
+          letterSpacing,
+          lineHeight;
+
+        if (pathEnd === "0") {
+          titleX = backgroundImg.width / 2;
+          titleY = (backgroundImg.height * 4) / 13;
+          fontSize = "1000px";
+          fontFamily = "YoonDokrip";
+          fontWeight = "normal";
+          letterSpacing = "normal";
+          lineHeight = "normal";
+
+          // Draw the title text
+          ctx.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center";
+          ctx.fillText(title, titleX, titleY);
+        } else if (pathEnd === "1") {
+          titleX = backgroundImg.width * 28 / 100;
+          fontSize = "400px";
+          fontFamily = "SCDream";
+          fontWeight = "700";
+          letterSpacing = "-0.05em";
+          lineHeight = "1em";
+
+          // Calculate titleY so that the bottom of the last character is at 20% height
+          const totalTextHeight = title.length * parseInt(fontSize);
+          titleY = (backgroundImg.height * 20 / 100) - totalTextHeight;
+
+          // Draw the title text vertically
+          ctx.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center";
+          const chars = title.split("");
+          chars.forEach((char, index) => {
+            ctx.fillText(char, titleX, titleY + index * parseInt(fontSize));
+          });
+        } else if (pathEnd === "2") {
+          titleX = backgroundImg.width / 2;
+          titleY = (backgroundImg.height * 4) / 13;
+          fontSize = "38px";
+          fontFamily = "SCDream";
+          fontWeight = "700";
+          letterSpacing = "-0.05em";
+          lineHeight = "1em";
+          // Draw the title text
+          ctx.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center";
+          ctx.fillText(title, titleX, titleY);
+        } else if (pathEnd === "3") {
+          titleX = backgroundImg.width / 2;
+          titleY = (backgroundImg.height * 8) / 10;
+          fontSize = "500px";
+          fontFamily = "SCDream";
+          fontWeight = "700";
+          letterSpacing = "-0.05em";
+          lineHeight = "1em";
+          // Draw the title text
+          ctx.font = `${fontWeight} ${fontSize} ${fontFamily}`;
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center";
+          ctx.fillText(title, titleX, titleY);
+        }
 
         // Convert canvas to blob and then to base64
         canvas.toBlob((blob) => {
@@ -122,7 +188,7 @@ function Page() {
   const handleDragStop = (e, data) => {
     setDraggedPosition({ x: data.x, y: data.y });
   };
-  console.log('pathname:',pathname)
+  console.log("pathname:", pathname);
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -163,16 +229,67 @@ function Page() {
         </ModalContent>
       </Modal>
       <div className="relative w-full h-auto" ref={backgroundRef}>
-        <div
-          className="title-text w-full flex justify-center items-center absolute top-2.5 left-1/2 transform -translate-x-1/2 text-[62px] text-black"
-          style={{ fontFamily: "YoonDokrip", fontWeight: 700 }}
-        >
-          {title}
-        </div>
+        {pathname.split("/").pop() === "0" && (
+          <div
+            className="title-text w-full flex justify-center items-center absolute top-2.5 left-1/2 transform -translate-x-1/2 text-[62px] text-black"
+            style={{ fontFamily: "YoonDokrip", fontWeight: 700 }}
+          >
+            {title}
+          </div>
+        )}
+        {pathname.split("/").pop() === "1" && (
+          <div
+            className="title-text w-full flex flex-col justify-center items-center absolute bottom-[30%] left-[28%] transform -translate-x-1/2 text-[38px] text-black"
+            style={{
+              fontFamily: "SCDream",
+              fontWeight: 700,
+              letterSpacing: "-0.05em",
+              lineHeight: "1em",
+            }}
+          >
+            {title.split("").map((char, index) => (
+              <span key={index} style={{ margin: "0 -0.1em" }}>
+                {char}
+              </span>
+            ))}
+          </div>
+        )}
+        {pathname.split("/").pop() === "2" && (
+          <div
+            className="title-text w-full flex flex-col justify-center items-center absolute bottom-[35%] left-[28%] transform -translate-x-1/2 text-[38px] text-black"
+            style={{
+              fontFamily: "SCDream",
+              fontWeight: 700,
+              letterSpacing: "-0.05em",
+              lineHeight: "1em",
+            }}
+          >
+            {title.split("").map((char, index) => (
+              <span key={index} style={{ margin: "0 -0.1em" }}>
+                {char}
+              </span>
+            ))}
+          </div>
+        )}
+        {pathname.split("/").pop() === "3" && (
+          <div
+            className="title-text w-full flex flex-col justify-center items-center absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[32px] text-black"
+            style={{
+              fontFamily: "SCDream",
+              fontWeight: 700,
+              letterSpacing: "-0.05em",
+              lineHeight: "1em",
+            }}
+          >
+            {title}
+          </div>
+        )}
 
         <img
           alt="Background Image"
-          src={`/images/background${parseInt(pathname.split('/').pop()) + 1}.png`}
+          src={`/images/background${
+            parseInt(pathname.split("/").pop()) + 1
+          }.png`}
           className="object-cover w-full h-full rounded-2xl"
         />
         {uploadedImage && (
@@ -189,13 +306,18 @@ function Page() {
 
       <Input
         value={title.length > 5 ? title.substring(0, 5) : title}
-        onChange={(e) => setTitle(e.target.value.length > 5 ? e.target.value.substring(0, 5) : e.target.value)}
+        onChange={(e) =>
+          setTitle(
+            e.target.value.length > 5
+              ? e.target.value.substring(0, 5)
+              : e.target.value
+          )
+        }
         type="email"
         label="상단 출력 문구"
       />
       <div className="flex gap-x-5 justify-center items-center w-full">
-        
-        {pathname.split('/').pop() === '0' && (
+        {pathname.split("/").pop() === "0" && (
           <Button color="primary" onClick={onOpen}>
             사진업로드
           </Button>
