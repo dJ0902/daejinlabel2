@@ -6,7 +6,7 @@ function page() {
 
   const handleImage = () => {
     console.log('그림');
-    const url = "http://43.201.253.111/remove-background/";
+    const url = "https://vn3xcq2ahg.execute-api.ap-northeast-2.amazonaws.com/remove-background/";
     const file_path = "/images/test1.jpg";
 
     fetch(file_path)
