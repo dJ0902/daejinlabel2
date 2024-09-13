@@ -37,14 +37,14 @@ export default function CardSection() {
           onPress={() => console.log("item pressed")}
           className="w-full h-full"
         >
-          <Link href={`/postings/${index}`}>
+          <Link className="w-full h-full" href={`/postings/${index}`}>
             <CardBody className="overflow-visible p-0">
               <div className="w-full h-full relative">
                 <img
                   shadow="sm"
                   radius="lg"
                   alt={item.title}
-                  className="w-full h-[20vh] object-cover rounded-2xl shadow-md"
+                  className="w-full h-[20vh] object-fill rounded-2xl shadow-md"
                   src={item.img}
                 />
               </div>

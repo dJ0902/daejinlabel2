@@ -44,16 +44,37 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
   const [scale, setScale] = useState(1)
   const [rotate, setRotate] = useState(0)
   const [aspect, setAspect] = useState(undefined)
+  const [isLoading, setIsLoading] = useState(false)
 
-  function onSelectFile(e) {
+  async function onSelectFile(e) {
+    setIsLoading(true)
     if (e.target.files && e.target.files.length > 0) {
       setCrop(undefined) // Makes crop preview update between images.
-      const reader = new FileReader()
-      reader.addEventListener('load', () =>
-        setUploadedImage(reader.result?.toString() || ''),
-      )
-      reader.readAsDataURL(e.target.files[0])
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("https://vn3xcq2ahg.execute-api.ap-northeast-2.amazonaws.com/remove-background/", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const reader = new FileReader();
+          reader.addEventListener('load', () =>
+            setUploadedImage(reader.result?.toString() || ''),
+          );
+          reader.readAsDataURL(blob);
+        } else {
+          console.error(`Request failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
+    setIsLoading(false)
   }
 
   function onImageLoad(e) {
@@ -136,7 +157,7 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
   return (
     <div className="App flex flex-col justify-center items-center gap-y-5">
       <div className="Crop-Controls flex flex-col justify-center items-center gap-y-5">
-        <Button color="primary" onClick={() => document.querySelector('input[type="file"]').click()}>
+        <Button isLoading={isLoading}color="primary" onClick={() => document.querySelector('input[type="file"]').click()}>
           이미지 선택
         </Button>
         <input className='hidden' type="file" accept="image/*" onChange={onSelectFile} />
