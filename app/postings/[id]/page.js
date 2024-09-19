@@ -83,9 +83,6 @@ function Page() {
         canvas.width = backgroundImg.width;
         canvas.height = backgroundImg.height;
 
-        // Draw the background image first
-        ctx.drawImage(backgroundImg, 0, 0);
-
         // Draw the uploaded image if it exists
         if (uploadedImage && uploadedImgRef.current) {
           const uploadedImg = new window.Image();
@@ -102,9 +99,14 @@ function Page() {
             const height = uploadedImgRef.current.height * scaleY;
 
             ctx.drawImage(uploadedImg, x, y, width, height);
+
+            // Draw the background image on top
+            ctx.drawImage(backgroundImg, 0, 0);
             drawTitleAndSave();
           };
         } else {
+          // Draw the background image if no uploaded image
+          ctx.drawImage(backgroundImg, 0, 0);
           drawTitleAndSave();
         }
       };
@@ -123,7 +125,7 @@ function Page() {
         if (pathEnd === "0") {
           titleX = backgroundImg.width / 2;
           titleY = (backgroundImg.height * 4) / 13;
-          fontSize = "900px";
+          fontSize = "1000px";
           fontFamily = "YoonDokrip";
           fontWeight = "normal";
           letterSpacing = "normal";
@@ -302,7 +304,7 @@ function Page() {
             {pathname.split("/").pop() === "0" && (
               <div
                 id="title"
-                className="title-text w-full flex justify-center items-center absolute top-2.5 left-1/2 transform -translate-x-1/2 text-[62px] text-black"
+                className="title-text w-full flex justify-center items-center absolute top-2.5 left-1/2 transform -translate-x-1/2 text-[62px] text-black pt-1"
                 style={{ fontFamily: "YoonDokrip", fontWeight: 700 }}
               >
                 {title}
