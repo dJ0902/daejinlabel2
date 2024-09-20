@@ -603,18 +603,21 @@ function Page() {
               <img
                 src={completeImage}
                 alt="Generated Image"
-                className="max-w-full max-h-full object-contain"
+                className={`max-w-full max-h-full object-contain ${isIPhone ? 'animate-pulse' : ''}`}
               />
+              {isIPhone && (
+                <p className="text-blue-700 font-bold text-sm">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
+              )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
+                {!isIPhone && (
                 <Button
                   className="w-2/3 animate-pulse"
                   color="primary"
                   onClick={handleDownloadImageFromS3}
                 >
-                  {isIPhone
-                    ? "이미지 열기"
-                    : "다운로드"}
+                  다운로드
                 </Button>
+                )}
                 <Button
                   className="w-2/3 text-gray-500"
                   color="default"
