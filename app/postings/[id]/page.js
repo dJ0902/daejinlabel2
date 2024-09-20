@@ -236,7 +236,7 @@ function Page() {
             /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
             "$1년$2월$3일$4시$5분$6초"
           );
-        link.download = `label_${title}_${currentTime}.png`;
+        link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
         link.click();
       }
     }
@@ -289,7 +289,7 @@ function Page() {
           /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
           "$1년$2월$3일$4시$5분$6초"
         );
-      link.download = `label_${title}_${currentTime}.png`;
+      link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
       link.click();
     }
   };
