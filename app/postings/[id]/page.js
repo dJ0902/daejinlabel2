@@ -603,10 +603,10 @@ function Page() {
               <img
                 src={completeImage}
                 alt="Generated Image"
-                className={`max-w-full max-h-full object-contain ${isIPhone ? 'animate-pulse' : ''}`}
+                className={`max-w-full max-h-full object-contain ${isIPhone ? 'shakeAnimation' : ''}`}
               />
               {isIPhone && (
-                <p className="text-blue-700 font-bold text-sm">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
+                <p className="text-blue-700 font-bold text-sm my-2">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
               )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
                 {!isIPhone && (

@@ -71,3 +71,21 @@
   font-weight: 900;
   src: url('/fonts/SCDream6.otf') format('truetype');
 }
+
+@keyframes shake {
+  0% { transform: scale(1); }
+  10% { transform: scale(1.01); }
+  20% { transform: scale(0.99); }
+  30% { transform: scale(1.01); }
+  40% { transform: scale(0.99); }
+  50% { transform: scale(1.01); }
+  60% { transform: scale(0.99); }
+  70% { transform: scale(1.01); }
+  80% { transform: scale(0.99); }
+  90% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+.shakeAnimation {
+  animation: shake 5s ease-in-out infinite;
+}
