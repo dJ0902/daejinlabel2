@@ -277,6 +277,30 @@ function Page() {
     setIsComplete(false);
   };
 
+  const handleDownload = () => {
+    if (generatedImageSrc) {
+      const link = document.createElement("a");
+      link.href = generatedImageSrc;
+      const currentTime = new Date()
+        .toLocaleString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })
+        .replace(/[:\s]/g, "")
+        .replace(/,/g, "")
+        .replace(
+          /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+          "$1년$2월$3일$4시$5분$6초"
+        );
+      link.download = `label_${title}_${currentTime}.png`;
+      link.click();
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
       {!isComplete ? (
@@ -494,10 +518,13 @@ function Page() {
             alt="Generated Image"
             className="max-w-full max-h-full object-contain"
           />
-          <Button color="primary" onClick={handleBackToEdit}>
+          <Button className="w-2/3" color="primary" onClick={handleDownload}>
+            재다운로드
+          </Button>
+          <Button className="w-2/3" color="primary" onClick={handleBackToEdit}>
             편집으로 돌아가기
           </Button>
-          <Button color="primary" onClick={handleArrowBack}>
+          <Button className="w-2/3" color="primary" onClick={handleArrowBack}>
             첫 화면으로 돌아가기
           </Button>
         </div>
