@@ -582,11 +582,11 @@ function Page() {
                 이미지삭제
               </Button>
             )}
-            {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
+            {/* {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
               <Button color="primary" onClick={handleSaveImage}>
                 저장하기
               </Button>
-            )}
+            )} */}
             {/* {["0","1", "2", "3"].includes(pathname.split("/").pop()) && (
               <Button color="primary" onClick={handleSaveImage2}>
                 저장하기
