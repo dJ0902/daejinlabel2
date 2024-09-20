@@ -238,6 +238,7 @@ function Page() {
           );
         link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
         link.setAttribute("type", "image/png"); // Specify the file type
+        link.setAttribute("download", `label_${title || "untitled"}_${currentTime}.png`); // Specify the file type
         link.click();
       }
     }
@@ -292,6 +293,8 @@ function Page() {
         );
       link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
       link.setAttribute("type", "image/png"); // Specify the file type
+      link.setAttribute("download", `label_${title || "untitled"}_${currentTime}.png`); // Specify the file type
+
       link.click();
     }
   };
