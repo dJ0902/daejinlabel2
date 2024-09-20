@@ -599,20 +599,23 @@ function Page() {
               <Button
                 className="w-2/3 animate-pulse"
                 color="primary"
-                onClick={handleDownload}
+                onClick={handleDownloadImageFromS3}
               >
                 다운로드
               </Button>
               <Button
-                className="w-2/3"
-                color="primary"
+                className="w-2/3 text-gray-500"
+                color="default"
+                variant="bordered"
                 onClick={handleBackToEdit}
               >
                 편집으로 돌아가기
               </Button>
               <Button
-                className="w-2/3"
-                color="primary"
+                className="w-2/3 text-gray-500"
+
+                color="default"
+                variant="bordered"
                 onClick={handleArrowBack}
               >
                 첫 화면으로 돌아가기
