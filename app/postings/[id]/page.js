@@ -237,6 +237,7 @@ function Page() {
             "$1년$2월$3일$4시$5분$6초"
           );
         link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+        link.setAttribute("type", "image/png"); // Specify the file type
         link.click();
       }
     }
@@ -290,6 +291,7 @@ function Page() {
           "$1년$2월$3일$4시$5분$6초"
         );
       link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+      link.setAttribute("type", "image/png"); // Specify the file type
       link.click();
     }
   };
