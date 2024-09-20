@@ -23,6 +23,8 @@ import html2canvas from "html2canvas";
 import { Rnd } from "react-rnd";
 import { CgArrowsExpandLeft } from "react-icons/cg";
 import SlideUp from "@/app/components/SlideUp";
+import {Spinner} from "@nextui-org/spinner";
+
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -313,6 +315,32 @@ function Page() {
     }
   };
 
+  const handleDownloadImageFromS3 = async () => {
+    if (completeImage) {
+      const link = document.createElement("a");
+      link.href = completeImage;
+      const currentTime = new Date()
+        .toLocaleString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })
+        .replace(/[:\s]/g, "")
+        .replace(/,/g, "")
+        .replace(
+          /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+          "$1년$2월$3일$4시$5분$6초"
+        );
+      link.download = `label_image_${currentTime}.png`;
+      link.click();
+    } else {
+      console.log("No image available to download");
+    }
+  };
+
   const handleUploadToS3 = async (dataURL) => {
     let filename = encodeURIComponent(`image_${Date.now()}.png`);
     let res = await fetch("/api/post/image?file=" + filename);
@@ -559,22 +587,7 @@ function Page() {
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
           {isLoading ? (
-            <Card className="w-full space-y-5 p-4" radius="lg">
-              <Skeleton className="rounded-lg">
-                <div className="h-24 rounded-lg bg-default-300"></div>
-              </Skeleton>
-              <div className="space-y-3">
-                <Skeleton className="w-3/5 rounded-lg">
-                  <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
-                </Skeleton>
-                <Skeleton className="w-4/5 rounded-lg">
-                  <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
-                </Skeleton>
-                <Skeleton className="w-2/5 rounded-lg">
-                  <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
-                </Skeleton>
-              </div>
-            </Card>
+            <Spinner />
           ) : (
             <SlideUp>
               <img
@@ -584,7 +597,7 @@ function Page() {
               />
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
               <Button
-                className="w-2/3"
+                className="w-2/3 animate-pulse"
                 color="primary"
                 onClick={handleDownload}
               >
