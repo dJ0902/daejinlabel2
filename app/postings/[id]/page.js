@@ -33,6 +33,8 @@ function Page() {
   const router = useRouter();
   const [isComplete, setIsComplete] = useState(false);
   const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
+  const [testImage, setTestImage] = useState("/images/background1.png");
+
   const [rndState, setRndState] = useState({
     x: 100,
     y: 100,
@@ -212,38 +214,37 @@ function Page() {
           ctx.textAlign = "center";
           ctx.fillText(title, titleX, titleY);
         }
+        
+        // Convert canvas to dataURL and then to a downloadable link
+        const dataURL = canvas.toDataURL("image/png");
+        setGeneratedImageSrc(dataURL);
+        setIsComplete(true);
 
-        // Convert canvas to blob and then to a downloadable link
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const dataURL = URL.createObjectURL(blob);
-            setGeneratedImageSrc(dataURL);
-            setIsComplete(true);
-
-            // Create a link to download the image
-            const link = document.createElement("a");
-            link.href = dataURL;
-            const currentTime = new Date()
-              .toLocaleString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-              })
-              .replace(/[:\s]/g, "")
-              .replace(/,/g, "")
-              .replace(
-                /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-                "$1년$2월$3일$4시$5분$6초"
-              );
-            link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
-            link.setAttribute("type", "image/png"); // Specify the file type
-            link.setAttribute("download", `label_${title || "untitled"}_${currentTime}.png`); // Specify the file type
-            link.click();
-          }
-        }, "image/png");
+        // Create a link to download the image
+        const link = document.createElement("a");
+        link.href = dataURL;
+        const currentTime = new Date()
+          .toLocaleString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })
+          .replace(/[:\s]/g, "")
+          .replace(/,/g, "")
+          .replace(
+            /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+            "$1년$2월$3일$4시$5분$6초"
+          );
+        link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+               link.setAttribute("type", "image/png"); // Specify the file type
+        link.setAttribute(
+          "download",
+          `label_${title || "untitled"}_${currentTime}.png`
+        ); // Specify the file type
+        link.click();
       }
     }
   };
@@ -297,9 +298,40 @@ function Page() {
         );
       link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
       link.setAttribute("type", "image/png"); // Specify the file type
-      link.setAttribute("download", `label_${title || "untitled"}_${currentTime}.png`); // Specify the file type
+      link.setAttribute(
+        "download",
+        `label_${title || "untitled"}_${currentTime}.png`
+      ); // Specify the file type
 
       link.click();
+    }
+  };
+
+  const handleUploadToS3 = async () => {
+    let filePath = testImage; // Use testImage path
+    let filename = encodeURIComponent(filePath.split('/').pop());
+    let res = await fetch("/api/post/image?file=" + filename);
+    res = await res.json();
+
+    // Fetch the image as a blob
+    let response = await fetch(filePath);
+    let blob = await response.blob();
+
+    // S3 업로드
+    const formData = new FormData();
+    Object.entries({ ...res.fields, file: blob }).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    let 업로드결과 = await fetch(res.url, {
+      method: "POST",
+      body: formData,
+    });
+    console.log(업로드결과);
+
+    if (업로드결과.ok) {
+      console.log("성공")
+    } else {
+      console.log("실패");
     }
   };
 
@@ -491,6 +523,8 @@ function Page() {
             label="상단 출력 문구"
           />
           <div className="flex gap-x-5 justify-center items-center w-full">
+            {/* <Button onClick={handleUploadToS3}>S3업로드</Button> */}
+
             {pathname.split("/").pop() === "0" && (
               <Button color="primary" onClick={onOpen}>
                 사진업로드
