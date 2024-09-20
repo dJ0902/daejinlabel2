@@ -10,6 +10,8 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Skeleton,
+  Card,
 } from "@nextui-org/react";
 import ImageCropper from "../../components/ImageCropper";
 import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
@@ -20,6 +22,7 @@ import dynamic from "next/dynamic";
 import html2canvas from "html2canvas";
 import { Rnd } from "react-rnd";
 import { CgArrowsExpandLeft } from "react-icons/cg";
+import SlideUp from "@/app/components/SlideUp";
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -34,6 +37,8 @@ function Page() {
   const [isComplete, setIsComplete] = useState(false);
   const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
   const [testImage, setTestImage] = useState("/images/background1.png");
+  const [completeImage, setCompleteImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [rndState, setRndState] = useState({
     x: 100,
@@ -214,37 +219,38 @@ function Page() {
           ctx.textAlign = "center";
           ctx.fillText(title, titleX, titleY);
         }
-        
+
         // Convert canvas to dataURL and then to a downloadable link
         const dataURL = canvas.toDataURL("image/png");
         setGeneratedImageSrc(dataURL);
         setIsComplete(true);
 
+        handleUploadToS3(dataURL);
         // Create a link to download the image
-        const link = document.createElement("a");
-        link.href = dataURL;
-        const currentTime = new Date()
-          .toLocaleString("ko-KR", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })
-          .replace(/[:\s]/g, "")
-          .replace(/,/g, "")
-          .replace(
-            /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-            "$1년$2월$3일$4시$5분$6초"
-          );
-        link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
-               link.setAttribute("type", "image/png"); // Specify the file type
-        link.setAttribute(
-          "download",
-          `label_${title || "untitled"}_${currentTime}.png`
-        ); // Specify the file type
-        link.click();
+        // const link = document.createElement("a");
+        // link.href = dataURL;
+        // const currentTime = new Date()
+        //   .toLocaleString("ko-KR", {
+        //     year: "numeric",
+        //     month: "2-digit",
+        //     day: "2-digit",
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        //     second: "2-digit",
+        //   })
+        //   .replace(/[:\s]/g, "")
+        //   .replace(/,/g, "")
+        //   .replace(
+        //     /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+        //     "$1년$2월$3일$4시$5분$6초"
+        //   );
+        // link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+        //        link.setAttribute("type", "image/png"); // Specify the file type
+        // link.setAttribute(
+        //   "download",
+        //   `label_${title || "untitled"}_${currentTime}.png`
+        // ); // Specify the file type
+        // link.click();
       }
     }
   };
@@ -307,15 +313,14 @@ function Page() {
     }
   };
 
-  const handleUploadToS3 = async () => {
-    let filePath = testImage; // Use testImage path
-    let filename = encodeURIComponent(filePath.split('/').pop());
+  const handleUploadToS3 = async (dataURL) => {
+    let filename = encodeURIComponent(`image_${Date.now()}.png`);
     let res = await fetch("/api/post/image?file=" + filename);
     res = await res.json();
 
-    // Fetch the image as a blob
-    let response = await fetch(filePath);
-    let blob = await response.blob();
+    // Convert dataURL to blob
+    const response = await fetch(dataURL);
+    const blob = await response.blob();
 
     // S3 업로드
     const formData = new FormData();
@@ -329,7 +334,11 @@ function Page() {
     console.log(업로드결과);
 
     if (업로드결과.ok) {
-      console.log("성공")
+      console.log("성공");
+      setCompleteImage(
+        "https://labelimages.s3.ap-northeast-2.amazonaws.com/" + filename
+      );
+      setIsLoading(false);
     } else {
       console.log("실패");
     }
@@ -549,20 +558,57 @@ function Page() {
         </>
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
-          <img
-            src={generatedImageSrc}
-            alt="Generated Image"
-            className="max-w-full max-h-full object-contain"
-          />
-          <Button className="w-2/3" color="primary" onClick={handleDownload}>
-            재다운로드
-          </Button>
-          <Button className="w-2/3" color="primary" onClick={handleBackToEdit}>
-            편집으로 돌아가기
-          </Button>
-          <Button className="w-2/3" color="primary" onClick={handleArrowBack}>
-            첫 화면으로 돌아가기
-          </Button>
+          {isLoading ? (
+            <Card className="w-full space-y-5 p-4" radius="lg">
+              <Skeleton className="rounded-lg">
+                <div className="h-24 rounded-lg bg-default-300"></div>
+              </Skeleton>
+              <div className="space-y-3">
+                <Skeleton className="w-3/5 rounded-lg">
+                  <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                </Skeleton>
+                <Skeleton className="w-4/5 rounded-lg">
+                  <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                </Skeleton>
+                <Skeleton className="w-2/5 rounded-lg">
+                  <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+                </Skeleton>
+              </div>
+            </Card>
+          ) : (
+            <SlideUp>
+              <img
+                src={completeImage}
+                alt="Generated Image"
+                className="max-w-full max-h-full object-contain"
+              />
+              <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
+              <Button
+                className="w-2/3"
+                color="primary"
+                onClick={handleDownload}
+              >
+                다운로드
+              </Button>
+              <Button
+                className="w-2/3"
+                color="primary"
+                onClick={handleBackToEdit}
+              >
+                편집으로 돌아가기
+              </Button>
+              <Button
+                className="w-2/3"
+                color="primary"
+                onClick={handleArrowBack}
+              >
+                첫 화면으로 돌아가기
+              </Button>
+              </div>
+
+            
+            </SlideUp>
+          )}
         </div>
       )}
     </div>
