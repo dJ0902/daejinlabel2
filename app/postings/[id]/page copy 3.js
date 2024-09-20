@@ -213,31 +213,38 @@ function Page() {
           ctx.fillText(title, titleX, titleY);
         }
 
-        // Convert canvas to base64 and then to a downloadable link
-        const dataURL = canvas.toDataURL("image/png");
-        setGeneratedImageSrc(dataURL);
-        setIsComplete(true);
+        // Convert canvas to blob and then to base64
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setGeneratedImageSrc(reader.result);
+              setIsComplete(true);
 
-        // Create a link to download the image
-        const link = document.createElement("a");
-        link.href = dataURL;
-        const currentTime = new Date()
-          .toLocaleString("ko-KR", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })
-          .replace(/[:\s]/g, "")
-          .replace(/,/g, "")
-          .replace(
-            /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-            "$1년$2월$3일$4시$5분$6초"
-          );
-        link.download = `label_${title}_${currentTime}.png`;
-        link.click();
+              // Create a link to download the image
+              const link = document.createElement("a");
+              link.href = reader.result;
+              const currentTime = new Date()
+                .toLocaleString("ko-KR", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })
+                .replace(/[:\s]/g, "")
+                .replace(/,/g, "")
+                .replace(
+                  /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+                  "$1년$2월$3일$4시$5분$6초"
+                );
+              link.download = `label_${title}_${currentTime}.png`;
+              link.click();
+            };
+            reader.readAsDataURL(blob);
+          }
+        }, "image/png");
       }
     }
   };
