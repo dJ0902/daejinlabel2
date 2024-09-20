@@ -8,6 +8,7 @@ export default function Home() {
     <div className="w-[90vw] md:w-[50vw] h-auto">
       {/* <Carousel></Carousel> */}
       <CardSection></CardSection>
+      
     </div>
   );
 }
