@@ -13,7 +13,7 @@ export default async function handler(요청, 응답){
       Fields: { key : 요청.query.file },
       Expires: 60, // seconds
       Conditions: [
-        ['content-length-range', 0, 1048576], //파일용량 1MB 까지 제한
+        ['content-length-range', 0, 5*10485760], //파일용량 1MB 까지 제한
       ],
     })
 

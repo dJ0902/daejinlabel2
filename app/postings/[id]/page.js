@@ -23,7 +23,7 @@ import html2canvas from "html2canvas";
 import { Rnd } from "react-rnd";
 import { CgArrowsExpandLeft } from "react-icons/cg";
 import SlideUp from "@/app/components/SlideUp";
-import {Spinner} from "@nextui-org/spinner";
+import { Spinner } from "@nextui-org/spinner";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -41,6 +41,7 @@ function Page() {
   const [testImage, setTestImage] = useState("/images/background1.png");
   const [completeImage, setCompleteImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const [rndState, setRndState] = useState({
     x: 100,
@@ -315,34 +316,43 @@ function Page() {
     }
   };
 
-  const handleDownloadImageFromS3 = async () => {
+  const handleDownloadImageFromS3 = () => {
     if (completeImage) {
-      const link = document.createElement("a");
-      link.href = completeImage;
-      const currentTime = new Date()
-        .toLocaleString("ko-KR", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-        .replace(/[:\s]/g, "")
-        .replace(/,/g, "")
-        .replace(
-          /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-          "$1년$2월$3일$4시$5분$6초"
-        );
-      link.download = `label_image_${currentTime}.png`;
-      link.click();
+      // 모바일 기기 감지
+      
+
+      if (isIPhone) {
+        // 모바일 기기일 경우 새 탭에서 이미지 열기
+        window.open(completeImage, "_blank");
+      } else {
+        // 데스크톱일 경우 기존 다운로드 로직 유지
+        const link = document.createElement("a");
+        link.href = completeImage;
+        const currentTime = new Date()
+          .toLocaleString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })
+          .replace(/[:\s]/g, "")
+          .replace(/,/g, "")
+          .replace(
+            /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+            "$1년$2월$3일$4시$5분$6초"
+          );
+        link.download = `label_image_${currentTime}.png`;
+        link.click();
+      }
     } else {
       console.log("No image available to download");
     }
   };
 
   const handleUploadToS3 = async (dataURL) => {
-    let filename = encodeURIComponent(`image_${Date.now()}.png`);
+    let filename = encodeURIComponent(`image_${Date.now()}.jpg`);
     let res = await fetch("/api/post/image?file=" + filename);
     res = await res.json();
 
@@ -596,33 +606,32 @@ function Page() {
                 className="max-w-full max-h-full object-contain"
               />
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
-              <Button
-                className="w-2/3 animate-pulse"
-                color="primary"
-                onClick={handleDownloadImageFromS3}
-              >
-                다운로드
-              </Button>
-              <Button
-                className="w-2/3 text-gray-500"
-                color="default"
-                variant="bordered"
-                onClick={handleBackToEdit}
-              >
-                편집으로 돌아가기
-              </Button>
-              <Button
-                className="w-2/3 text-gray-500"
-
-                color="default"
-                variant="bordered"
-                onClick={handleArrowBack}
-              >
-                첫 화면으로 돌아가기
-              </Button>
+                <Button
+                  className="w-2/3 animate-pulse"
+                  color="primary"
+                  onClick={handleDownloadImageFromS3}
+                >
+                  {isIPhone
+                    ? "이미지 열기"
+                    : "다운로드"}
+                </Button>
+                <Button
+                  className="w-2/3 text-gray-500"
+                  color="default"
+                  variant="bordered"
+                  onClick={handleBackToEdit}
+                >
+                  편집으로 돌아가기
+                </Button>
+                <Button
+                  className="w-2/3 text-gray-500"
+                  color="default"
+                  variant="bordered"
+                  onClick={handleArrowBack}
+                >
+                  첫 화면으로 돌아가기
+                </Button>
               </div>
-
-            
             </SlideUp>
           )}
         </div>
