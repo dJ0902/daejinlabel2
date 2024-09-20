@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import html2canvas from "html2canvas";
 import { Rnd } from "react-rnd";
-import { CgArrowsExpandLeft } from "react-icons/cg";
+
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -33,12 +33,6 @@ function Page() {
   const router = useRouter();
   const [isComplete, setIsComplete] = useState(false);
   const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
-  const [rndState, setRndState] = useState({
-    x: 100,
-    y: 100,
-    width: 200,
-    height: 200,
-  }); // State to track Rnd position and size
 
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
@@ -100,10 +94,10 @@ function Page() {
               backgroundImg.width / backgroundRef.current.offsetWidth;
             const scaleY =
               backgroundImg.height / backgroundRef.current.offsetHeight;
-            const x = rndState.x * scaleX; // Use Rnd's state
-            const y = rndState.y * scaleY;
-            const width = rndState.width * scaleX;
-            const height = rndState.height * scaleY;
+            const x = draggedPosition.x * scaleX;
+            const y = draggedPosition.y * scaleY;
+            const width = uploadedImgRef.current.width * scaleX;
+            const height = uploadedImgRef.current.height * scaleY;
 
             ctx.drawImage(uploadedImg, x, y, width, height);
 
@@ -224,21 +218,7 @@ function Page() {
               // Create a link to download the image
               const link = document.createElement("a");
               link.href = reader.result;
-              const currentTime = new Date()
-                .toLocaleString("ko-KR", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })
-                .replace(/[:\s]/g, "")
-                .replace(/,/g, "")
-                .replace(
-                  /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-                  "$1년$2월$3일$4시$5분$6초"
-                );
+              const currentTime = new Date().toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/[:\s]/g, '').replace(/,/g, '').replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1년$2월$3일$4시$5분$6초');
               link.download = `label_${title}_${currentTime}.png`;
               link.click();
             };
@@ -321,11 +301,7 @@ function Page() {
             <IoIosArrowBack className="text-3xl cursor-pointer" />
           </div>
 
-          <div
-            id="picture"
-            className="relative w-full h-auto"
-            ref={backgroundRef}
-          >
+          <div id="picture" className="relative w-full h-auto" ref={backgroundRef}>
             {pathname.split("/").pop() === "0" && (
               <div
                 id="title"
@@ -387,60 +363,14 @@ function Page() {
             )}
 
             {uploadedImage && (
-              <Rnd
-                default={{
-                  x: rndState.x,
-                  y: rndState.y,
-                  width: rndState.width,
-                  height: rndState.height,
-                }}
-                minWidth={100}
-                minHeight={100}
-                bounds="parent" // 부모 요소 안에서만 이동 및 크기 조절 가능
-                onDragStop={(e, d) => {
-                  setRndState((prevState) => ({
-                    ...prevState,
-                    x: d.x,
-                    y: d.y,
-                  }));
-                }}
-                onResizeStop={(e, direction, ref, delta, position) => {
-                  setRndState({
-                    width: ref.style.width.replace("px", ""),
-                    height: ref.style.height.replace("px", ""),
-                    ...position,
-                  });
-                }}
-                resizeHandleComponent={{
-                  bottomRight: (
-                    <div
-                      style={{
-                        width: "30px",
-                        height: "30px",
-                        position: "absolute",
-                        right: "0",
-                        bottom: "0",
-                        cursor: "se-resize",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "gray",
-                        borderRadius: "50%",
-                        padding: "5px",
-                      }}
-                    >
-                      <CgArrowsExpandLeft className="text-2xl text-white font-bold" />
-                    </div>
-                  ),
-                }}
-              >
+              <Draggable bounds="parent" onStop={handleDragStop}>
                 <img
                   ref={uploadedImgRef}
                   src={uploadedImage}
-                  alt="Draggable Resizable"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  alt="Uploaded Image"
+                  className="absolute top-0 left-0 w-1/2 h-auto cursor-move z-50"
                 />
-              </Rnd>
+              </Draggable>
             )}
             <img
               alt="Background Image"
