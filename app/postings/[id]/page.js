@@ -232,15 +232,6 @@ function Page() {
         setIsComplete(true);
 
         setProgressValue(0);
-        const interval = setInterval(() => {
-          setProgressValue((prevValue) => {
-            if (prevValue >= 90) {
-              clearInterval(interval);
-              return 90;
-            }
-            return prevValue + 1;
-          });
-        }, 35);
 
         handleUploadToS3(dataURL);
         // Create a link to download the image
@@ -286,6 +277,25 @@ function Page() {
       });
     }
   };
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setInterval(() => {
+        setProgressValue((oldProgress) => {
+          const newProgress = Math.min(oldProgress + 3, 100); // Increase progress by 6 instead of 2
+          // progress 값에 따라 숫자를 업데이트
+          setProgressValue(newProgress);
+          if (newProgress === 100) {
+            setProgressValue(0); // 다 끝나면 progressvalue를 다시 0으로 해줘
+          }
+          return newProgress;
+        });
+      }, 100);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [isLoading]);
 
   const handleDragStop = (e, data) => {
     setDraggedPosition({ x: data.x, y: data.y });
@@ -382,7 +392,7 @@ function Page() {
         }
 
         const response = await fetch(
-          "http://localhost:8000/process-image-chunk",
+          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
           {
             method: "POST",
             headers: {
@@ -405,7 +415,7 @@ function Page() {
       // 모든 청크 업로드 완료 후 처리
       const finalResponse = await fetch(
         // "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
-        "http://localhost:8000/complete-image-upload",
+        "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
         {
           method: "POST",
           headers: {
@@ -421,12 +431,14 @@ function Page() {
       setCompleteImage(s3_url);
       setIsLoading(false);
       setProgressValue(100);
+      
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsLoading(false);
       setProgressValue(100);
     }
   };
+  console.log('isLoading:',isLoading);
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -640,7 +652,7 @@ function Page() {
         </>
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
-          {isLoading ? (
+          {isLoading && !completeImage ? (
             // <Spinner />
             <Progress
               aria-label="Downloading..."
