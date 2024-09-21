@@ -638,7 +638,7 @@ function Page() {
                 </p>
               )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
-                {!isIPhone && (
+                {!isIPhone && completeImage && (
                   <Button
                     className="w-2/3 animate-pulse bg-green-700 text-white"
                     color="primary"
@@ -654,7 +654,7 @@ function Page() {
                   onClick={() => {
                     setIsLoading(true);
                     handleBackToEdit();
-                    setIsLoading("");
+                    setCompleteImage("")
                   }}
                 >
                   편집으로 돌아가기
@@ -666,7 +666,7 @@ function Page() {
                   onClick={() => {
                     setIsLoading(true);
                     handleArrowBack();
-                    setIsLoading("");
+                    setCompleteImage("")
                   }}
                 >
                   첫 화면으로 돌아가기
