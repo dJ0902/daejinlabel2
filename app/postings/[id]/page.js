@@ -654,6 +654,7 @@ function Page() {
                   onClick={() => {
                     setIsLoading(true);
                     handleBackToEdit();
+                    setIsLoading("");
                   }}
                 >
                   편집으로 돌아가기
@@ -665,6 +666,7 @@ function Page() {
                   onClick={() => {
                     setIsLoading(true);
                     handleArrowBack();
+                    setIsLoading("");
                   }}
                 >
                   첫 화면으로 돌아가기
