@@ -25,8 +25,8 @@ import { CgArrowsExpandLeft } from "react-icons/cg";
 import SlideUp from "@/app/components/SlideUp";
 import { Spinner } from "@nextui-org/spinner";
 import { Progress } from "@nextui-org/react";
-import { v4 as uuidv4 } from 'uuid';
-
+import { v4 as uuidv4 } from "uuid";
+import { CircularProgress } from "@nextui-org/react";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -281,7 +281,10 @@ function Page() {
     if (isLoading) {
       const timer = setInterval(() => {
         setProgressValue((oldProgress) => {
-          const newProgress = Math.min(oldProgress + 3, 100); // Increase progress by 6 instead of 2
+          let newProgress = oldProgress + 3; // Increase progress by 3
+          if (newProgress > 100) {
+            newProgress = 100; // If progress exceeds 100, set it to 100
+          }
           // progress 값에 따라 숫자를 업데이트
           setProgressValue(newProgress);
           if (newProgress === 100) {
@@ -421,7 +424,10 @@ function Page() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ totalChunks: totalChunks, requestId: requestId }),
+          body: JSON.stringify({
+            totalChunks: totalChunks,
+            requestId: requestId,
+          }),
         }
       );
 
@@ -431,14 +437,13 @@ function Page() {
       setCompleteImage(s3_url);
       setIsLoading(false);
       setProgressValue(100);
-      
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsLoading(false);
       setProgressValue(100);
     }
   };
-  console.log('isLoading:',isLoading);
+  console.log("isLoading:", isLoading);
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -654,20 +659,26 @@ function Page() {
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
           {isLoading && !completeImage ? (
             // <Spinner />
-            <Progress
-              aria-label="Downloading..."
-              size="md"
-              value={progressValue}
-              // color="green-700"
+            // <Progress
+            //   aria-label="Downloading..."
+            //   size="md"
+            //   value={progressValue}
+            //   // color="green-700"
 
+            //   showValueLabel={true}
+            //   classNames={{
+            //     base: "max-w-md",
+            //     track: "drop-shadow-md border border-default",
+            //     indicator: "bg-gradient-to-r from-green-700 to-green-600",
+            //     label: "tracking-wider font-medium text-default-600",
+            //     value: "text-green-700 font-semibold",
+            //   }}
+            <CircularProgress
+              aria-label="Loading..."
+              size="lg"
+              value={progressValue}
               showValueLabel={true}
-              classNames={{
-                base: "max-w-md",
-                track: "drop-shadow-md border border-default",
-                indicator: "bg-gradient-to-r from-green-700 to-green-600",
-                label: "tracking-wider font-medium text-default-600",
-                value: "text-green-700 font-semibold",
-              }}
+              color="success"
             />
           ) : (
             <SlideUp>

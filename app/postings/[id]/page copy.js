@@ -593,7 +593,7 @@ function Page() {
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
           {isLoading ? (
-            <Spinner />
+            <Spinner color="success" />
           ) : (
             <SlideUp>
               <img
