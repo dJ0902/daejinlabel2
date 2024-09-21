@@ -3,6 +3,8 @@ import React from "react";
 import ImageOverlay from "@/app/components/ImageOverlay";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { MdOutlineDesignServices } from "react-icons/md";
+
 function page() {
   const router = useRouter();
 
@@ -22,6 +24,7 @@ function page() {
             <span className="text-3xl">🏷️</span>
             <h2 className="text-2xl font-extrabold text-white">
               MY 라벨 만들기
+              
             </h2>
           </div>
           <p className="text-white text-center mb-6 italic font-bold text-xl">
@@ -36,18 +39,21 @@ function page() {
             ].map((step, index) => (
               <div
                 key={index}
-                className="bg-green-600 p-3 rounded flex items-start space-x-3"
+                className="bg-green-600 p-3 rounded flex items-center space-x-3 justify-center"
               >
                 <div className="bg-white text-green-700 font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
                   {index + 1}
                 </div>
+                <div>
                 <p className="text-white font-bold text-small">{step}</p>
+                </div>
+                
               </div>
             ))}
           </div>
         </div>
       </div>
-      <Button  className="bg-green-700 text-white font-bold" onClick={() => router.push("/postinglist")}>꾸미러 가기</Button>
+      <Button  className="bg-green-700 text-white" onClick={() => router.push("/postinglist")}>꾸미러 가기</Button>
     </div>
   );
 }
