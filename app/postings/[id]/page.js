@@ -651,7 +651,10 @@ function Page() {
                   className="w-2/3 text-gray-500"
                   color="default"
                   variant="bordered"
-                  onClick={handleBackToEdit}
+                  onClick={() => {
+                    setIsLoading(true);
+                    handleBackToEdit();
+                  }}
                 >
                   편집으로 돌아가기
                 </Button>
@@ -659,7 +662,10 @@ function Page() {
                   className="w-2/3 text-gray-500"
                   color="default"
                   variant="bordered"
-                  onClick={handleArrowBack}
+                  onClick={() => {
+                    setIsLoading(true);
+                    handleArrowBack();
+                  }}
                 >
                   첫 화면으로 돌아가기
                 </Button>
