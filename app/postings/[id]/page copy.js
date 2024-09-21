@@ -10,6 +10,8 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Skeleton,
+  Card,
 } from "@nextui-org/react";
 import ImageCropper from "../../components/ImageCropper";
 import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
@@ -18,6 +20,10 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import html2canvas from "html2canvas";
+import { Rnd } from "react-rnd";
+import { CgArrowsExpandLeft } from "react-icons/cg";
+import SlideUp from "@/app/components/SlideUp";
+import { Spinner } from "@nextui-org/spinner";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -32,6 +38,17 @@ function Page() {
   const router = useRouter();
   const [isComplete, setIsComplete] = useState(false);
   const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
+  const [testImage, setTestImage] = useState("/images/background1.png");
+  const [completeImage, setCompleteImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  const [rndState, setRndState] = useState({
+    x: 100,
+    y: 100,
+    width: 200,
+    height: 200,
+  }); // State to track Rnd position and size
 
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
@@ -83,9 +100,6 @@ function Page() {
         canvas.width = backgroundImg.width;
         canvas.height = backgroundImg.height;
 
-        // Draw the background image first
-        ctx.drawImage(backgroundImg, 0, 0);
-
         // Draw the uploaded image if it exists
         if (uploadedImage && uploadedImgRef.current) {
           const uploadedImg = new window.Image();
@@ -96,15 +110,20 @@ function Page() {
               backgroundImg.width / backgroundRef.current.offsetWidth;
             const scaleY =
               backgroundImg.height / backgroundRef.current.offsetHeight;
-            const x = draggedPosition.x * scaleX;
-            const y = draggedPosition.y * scaleY;
-            const width = uploadedImgRef.current.width * scaleX;
-            const height = uploadedImgRef.current.height * scaleY;
+            const x = rndState.x * scaleX; // Use Rnd's state
+            const y = rndState.y * scaleY;
+            const width = rndState.width * scaleX;
+            const height = rndState.height * scaleY;
 
             ctx.drawImage(uploadedImg, x, y, width, height);
+
+            // Draw the background image on top
+            ctx.drawImage(backgroundImg, 0, 0);
             drawTitleAndSave();
           };
         } else {
+          // Draw the background image if no uploaded image
+          ctx.drawImage(backgroundImg, 0, 0);
           drawTitleAndSave();
         }
       };
@@ -204,24 +223,37 @@ function Page() {
           ctx.fillText(title, titleX, titleY);
         }
 
-        // Convert canvas to blob and then to base64
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setGeneratedImageSrc(reader.result);
-              setIsComplete(true);
+        // Convert canvas to dataURL and then to a downloadable link
+        const dataURL = canvas.toDataURL("image/png");
+        setGeneratedImageSrc(dataURL);
+        setIsComplete(true);
 
-              // Create a link to download the image
-              const link = document.createElement("a");
-              link.href = reader.result;
-              const currentTime = new Date().toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/[:\s]/g, '').replace(/,/g, '').replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1년$2월$3일$4시$5분$6초');
-              link.download = `label_${title}_${currentTime}.png`;
-              link.click();
-            };
-            reader.readAsDataURL(blob);
-          }
-        }, "image/png");
+        handleUploadToS3(dataURL);
+        // Create a link to download the image
+        // const link = document.createElement("a");
+        // link.href = dataURL;
+        // const currentTime = new Date()
+        //   .toLocaleString("ko-KR", {
+        //     year: "numeric",
+        //     month: "2-digit",
+        //     day: "2-digit",
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        //     second: "2-digit",
+        //   })
+        //   .replace(/[:\s]/g, "")
+        //   .replace(/,/g, "")
+        //   .replace(
+        //     /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+        //     "$1년$2월$3일$4시$5분$6초"
+        //   );
+        // link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+        //        link.setAttribute("type", "image/png"); // Specify the file type
+        // link.setAttribute(
+        //   "download",
+        //   `label_${title || "untitled"}_${currentTime}.png`
+        // ); // Specify the file type
+        // link.click();
       }
     }
   };
@@ -245,13 +277,109 @@ function Page() {
     setDraggedPosition({ x: data.x, y: data.y });
   };
   const handleArrowBack = () => {
-    router.push("/");
+    router.push("/postinglist");
   };
 
   const handleBackToEdit = () => {
     setTitle("");
     setUploadedImage(null);
     setIsComplete(false);
+  };
+
+  const handleDownload = () => {
+    if (generatedImageSrc) {
+      const link = document.createElement("a");
+      link.href = generatedImageSrc;
+      const currentTime = new Date()
+        .toLocaleString("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })
+        .replace(/[:\s]/g, "")
+        .replace(/,/g, "")
+        .replace(
+          /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+          "$1년$2월$3일$4시$5분$6초"
+        );
+      link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+      link.setAttribute("type", "image/png"); // Specify the file type
+      link.setAttribute(
+        "download",
+        `label_${title || "untitled"}_${currentTime}.png`
+      ); // Specify the file type
+
+      link.click();
+    }
+  };
+
+  const handleDownloadImageFromS3 = () => {
+    if (completeImage) {
+      // 모바일 기기 감지
+      
+
+      if (isIPhone) {
+        // 모바일 기기일 경우 새 탭에서 이미지 열기
+        window.open(completeImage, "_blank");
+      } else {
+        // 데스크톱일 경우 기존 다운로드 로직 유지
+        const link = document.createElement("a");
+        link.href = completeImage;
+        const currentTime = new Date()
+          .toLocaleString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })
+          .replace(/[:\s]/g, "")
+          .replace(/,/g, "")
+          .replace(
+            /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+            "$1년$2월$3일$4시$5분$6초"
+          );
+        link.download = `label_image_${currentTime}.png`;
+        link.click();
+      }
+    } else {
+      console.log("No image available to download");
+    }
+  };
+
+  const handleUploadToS3 = async (dataURL) => {
+    let filename = encodeURIComponent(`image_${Date.now()}.png`);
+    let res = await fetch("/api/post/image?file=" + filename);
+    res = await res.json();
+
+    // Convert dataURL to blob
+    const response = await fetch(dataURL);
+    const blob = await response.blob();
+
+    // S3 업로드
+    const formData = new FormData();
+    Object.entries({ ...res.fields, file: blob }).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    let 업로드결과 = await fetch(res.url, {
+      method: "POST",
+      body: formData,
+    });
+    console.log(업로드결과);
+
+    if (업로드결과.ok) {
+      console.log("성공");
+      setCompleteImage(
+        "https://labelimages.s3.ap-northeast-2.amazonaws.com/" + filename
+      );
+      setIsLoading(false);
+    } else {
+      console.log("실패");
+    }
   };
 
   return (
@@ -281,7 +409,7 @@ function Page() {
                       취소
                     </Button>
                     <Button
-                      color="primary"
+                      className="bg-green-700 text-white"
                       onPress={() => {
                         handleConfirmClick();
                         onClose();
@@ -298,7 +426,11 @@ function Page() {
             <IoIosArrowBack className="text-3xl cursor-pointer" />
           </div>
 
-          <div id="picture" className="relative w-full h-auto" ref={backgroundRef}>
+          <div
+            id="picture"
+            className="relative w-full h-auto"
+            ref={backgroundRef}
+          >
             {pathname.split("/").pop() === "0" && (
               <div
                 id="title"
@@ -360,14 +492,60 @@ function Page() {
             )}
 
             {uploadedImage && (
-              <Draggable bounds="parent" onStop={handleDragStop}>
+              <Rnd
+                default={{
+                  x: rndState.x,
+                  y: rndState.y,
+                  width: rndState.width,
+                  height: rndState.height,
+                }}
+                minWidth={100}
+                minHeight={100}
+                bounds="parent" // 부모 요소 안에서만 이동 및 크기 조절 가능
+                onDragStop={(e, d) => {
+                  setRndState((prevState) => ({
+                    ...prevState,
+                    x: d.x,
+                    y: d.y,
+                  }));
+                }}
+                onResizeStop={(e, direction, ref, delta, position) => {
+                  setRndState({
+                    width: ref.style.width.replace("px", ""),
+                    height: ref.style.height.replace("px", ""),
+                    ...position,
+                  });
+                }}
+                resizeHandleComponent={{
+                  bottomRight: (
+                    <div
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        position: "absolute",
+                        right: "0",
+                        bottom: "0",
+                        cursor: "se-resize",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "gray",
+                        borderRadius: "50%",
+                        padding: "5px",
+                      }}
+                    >
+                      <CgArrowsExpandLeft className="text-2xl text-white font-bold" />
+                    </div>
+                  ),
+                }}
+              >
                 <img
                   ref={uploadedImgRef}
                   src={uploadedImage}
-                  alt="Uploaded Image"
-                  className="absolute top-0 left-0 w-1/2 h-auto cursor-move z-50"
+                  alt="Draggable Resizable"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
-              </Draggable>
+              </Rnd>
             )}
             <img
               alt="Background Image"
@@ -392,8 +570,10 @@ function Page() {
             label="상단 출력 문구"
           />
           <div className="flex gap-x-5 justify-center items-center w-full">
+            {/* <Button onClick={handleUploadToS3}>S3업로드</Button> */}
+
             {pathname.split("/").pop() === "0" && (
-              <Button color="primary" onClick={onOpen}>
+              <Button className="bg-green-700 text-white" onClick={onOpen}>
                 사진업로드
               </Button>
             )}
@@ -403,30 +583,56 @@ function Page() {
               </Button>
             )}
             {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
-              <Button color="primary" onClick={handleSaveImage}>
+              <Button className="bg-green-700 text-white" onClick={handleSaveImage}>
                 저장하기
               </Button>
             )}
-            {/* {["0","1", "2", "3"].includes(pathname.split("/").pop()) && (
-              <Button color="primary" onClick={handleSaveImage2}>
-                저장하기
-              </Button>
-            )} */}
+
           </div>
         </>
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
-          <img
-            src={generatedImageSrc}
-            alt="Generated Image"
-            className="max-w-full max-h-full object-contain"
-          />
-          <Button color="primary" onClick={handleBackToEdit}>
-            편집으로 돌아가기
-          </Button>
-          <Button color="primary" onClick={handleArrowBack}>
-            첫 화면으로 돌아가기
-          </Button>
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <SlideUp>
+              <img
+                src={completeImage}
+                alt="Generated Image"
+                className={`max-w-full max-h-full object-contain ${isIPhone ? 'shakeAnimation' : ''}`}
+              />
+              {isIPhone && (
+                <p className="text-green-700 font-bold text-sm my-2">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
+              )}
+              <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
+                {!isIPhone && (
+                <Button
+                  className="w-2/3 animate-pulse bg-green-700 text-white"
+                  color="primary"
+                  onClick={handleDownloadImageFromS3}
+                >
+                  다운로드
+                </Button>
+                )}
+                <Button
+                  className="w-2/3 text-gray-500"
+                  color="default"
+                  variant="bordered"
+                  onClick={handleBackToEdit}
+                >
+                  편집으로 돌아가기
+                </Button>
+                <Button
+                  className="w-2/3 text-gray-500"
+                  color="default"
+                  variant="bordered"
+                  onClick={handleArrowBack}
+                >
+                  첫 화면으로 돌아가기
+                </Button>
+              </div>
+            </SlideUp>
+          )}
         </div>
       )}
     </div>

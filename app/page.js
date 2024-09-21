@@ -21,15 +21,14 @@ function page() {
 
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-4 space-x-2">
-            <span className="text-3xl">🏷️</span>
-            <h2 className="text-2xl font-extrabold text-white">
-              MY 라벨 만들기
-              
-            </h2>
+            
+            <img src="/images/title.png" alt="" />
+            {/* <h2 className="text-2xl font-extrabold text-white">
+              🏷️MY 라벨 만들기 사용법
+            </h2> */}
+            
           </div>
-          <p className="text-white text-center mb-6 italic font-bold text-xl">
-            사용법
-          </p>
+          
           <div className="space-y-4 border-4 border-white p-4 rounded-lg bg-green-700 bg-opacity-80">
             {[
               "상단에 QR코드를 스캔해주세요.",
@@ -39,7 +38,7 @@ function page() {
             ].map((step, index) => (
               <div
                 key={index}
-                className="bg-green-600 p-3 rounded flex items-center space-x-3 justify-center"
+                className="bg-green-600 p-3 rounded flex items-center space-x-3 justify-start"
               >
                 <div className="bg-white text-green-700 font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
                   {index + 1}

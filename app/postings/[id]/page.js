@@ -24,6 +24,7 @@ import { Rnd } from "react-rnd";
 import { CgArrowsExpandLeft } from "react-icons/cg";
 import SlideUp from "@/app/components/SlideUp";
 import { Spinner } from "@nextui-org/spinner";
+import { Progress } from "@nextui-org/react";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -42,7 +43,7 @@ function Page() {
   const [completeImage, setCompleteImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
+  const [progressValue, setProgressValue] = useState(0);
   const [rndState, setRndState] = useState({
     x: 100,
     y: 100,
@@ -228,6 +229,17 @@ function Page() {
         setGeneratedImageSrc(dataURL);
         setIsComplete(true);
 
+        setProgressValue(0);
+        const interval = setInterval(() => {
+          setProgressValue((prevValue) => {
+            if (prevValue >= 90) {
+              clearInterval(interval);
+              return 90;
+            }
+            return prevValue + 1;
+          });
+        }, 70);
+
         handleUploadToS3(dataURL);
         // Create a link to download the image
         // const link = document.createElement("a");
@@ -277,7 +289,7 @@ function Page() {
     setDraggedPosition({ x: data.x, y: data.y });
   };
   const handleArrowBack = () => {
-    router.push("/");
+    router.push("/postinglist");
   };
 
   const handleBackToEdit = () => {
@@ -319,7 +331,6 @@ function Page() {
   const handleDownloadImageFromS3 = () => {
     if (completeImage) {
       // 모바일 기기 감지
-      
 
       if (isIPhone) {
         // 모바일 기기일 경우 새 탭에서 이미지 열기
@@ -352,35 +363,36 @@ function Page() {
   };
 
   const handleUploadToS3 = async (dataURL) => {
-    let filename = encodeURIComponent(`image_${Date.now()}.jpg`);
-    let res = await fetch("/api/post/image?file=" + filename);
-    res = await res.json();
-
-    // Convert dataURL to blob
-    const response = await fetch(dataURL);
-    const blob = await response.blob();
-
-    // S3 업로드
-    const formData = new FormData();
-    Object.entries({ ...res.fields, file: blob }).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    let 업로드결과 = await fetch(res.url, {
-      method: "POST",
-      body: formData,
-    });
-    console.log(업로드결과);
-
-    if (업로드결과.ok) {
-      console.log("성공");
-      setCompleteImage(
-        "https://labelimages.s3.ap-northeast-2.amazonaws.com/" + filename
+    try {
+      const response = await fetch(
+        "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ image: dataURL }),
+        }
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to process image");
+      }
+
+      const result = await response.json();
+      const s3_url = result.s3_url;
+
+      setCompleteImage(s3_url);
       setIsLoading(false);
-    } else {
-      console.log("실패");
+      setProgressValue(100);  // Set to 100 when loading is complete
+
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setIsLoading(false);
+      setProgressValue(100); 
     }
   };
+
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -583,36 +595,57 @@ function Page() {
               </Button>
             )}
             {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
-              <Button className="bg-green-700 text-white" onClick={handleSaveImage}>
+              <Button
+                className="bg-green-700 text-white"
+                onClick={handleSaveImage}
+              >
                 저장하기
               </Button>
             )}
-
           </div>
         </>
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
           {isLoading ? (
-            <Spinner />
+            // <Spinner />
+            <Progress
+              aria-label="Downloading..."
+              size="md"
+              value={progressValue}
+              // color="green-700"
+
+              showValueLabel={true}
+              classNames={{
+                base: "max-w-md",
+                track: "drop-shadow-md border border-default",
+                indicator: "bg-gradient-to-r from-green-700 to-green-600",
+                label: "tracking-wider font-medium text-default-600",
+                value: "text-green-700 font-semibold",
+              }}
+            />
           ) : (
             <SlideUp>
               <img
                 src={completeImage}
                 alt="Generated Image"
-                className={`max-w-full max-h-full object-contain ${isIPhone ? 'shakeAnimation' : ''}`}
+                className={`max-w-full max-h-full object-contain ${
+                  isIPhone ? "shakeAnimation" : ""
+                }`}
               />
               {isIPhone && (
-                <p className="text-green-700 font-bold text-sm my-2">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
+                <p className="text-green-700 font-bold text-sm my-2">
+                  ※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요
+                </p>
               )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
                 {!isIPhone && (
-                <Button
-                  className="w-2/3 animate-pulse bg-green-700 text-white"
-                  color="primary"
-                  onClick={handleDownloadImageFromS3}
-                >
-                  다운로드
-                </Button>
+                  <Button
+                    className="w-2/3 animate-pulse bg-green-700 text-white"
+                    color="primary"
+                    onClick={handleDownloadImageFromS3}
+                  >
+                    다운로드
+                  </Button>
                 )}
                 <Button
                   className="w-2/3 text-gray-500"
