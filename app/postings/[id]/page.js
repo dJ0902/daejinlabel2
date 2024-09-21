@@ -25,6 +25,8 @@ import { CgArrowsExpandLeft } from "react-icons/cg";
 import SlideUp from "@/app/components/SlideUp";
 import { Spinner } from "@nextui-org/spinner";
 import { Progress } from "@nextui-org/react";
+import { v4 as uuidv4 } from 'uuid';
+
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -238,7 +240,7 @@ function Page() {
             }
             return prevValue + 1;
           });
-        }, 70);
+        }, 35);
 
         handleUploadToS3(dataURL);
         // Create a link to download the image
@@ -364,35 +366,67 @@ function Page() {
 
   const handleUploadToS3 = async (dataURL) => {
     try {
-      const response = await fetch(
-        "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image",
+      // dataURL에서 실제 base64 데이터만 추출
+      const base64Data = dataURL.split(",")[1];
+
+      const chunkSize = 1000000; // 약 1MB
+      const totalChunks = Math.ceil(base64Data.length / chunkSize);
+      const requestId = uuidv4(); // Generate a unique requestId
+
+      for (let i = 0; i < totalChunks; i++) {
+        let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
+
+        // Base64 패딩 추가 (필요한 경우)
+        while (chunk.length % 4 !== 0) {
+          chunk += "=";
+        }
+
+        const response = await fetch(
+          "http://localhost:8000/process-image-chunk",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              image: chunk,
+              chunkIndex: i,
+              totalChunks: totalChunks,
+              requestId: requestId,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to process image chunk ${i + 1}`);
+        }
+      }
+
+      // 모든 청크 업로드 완료 후 처리
+      const finalResponse = await fetch(
+        // "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
+        "http://localhost:8000/complete-image-upload",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ image: dataURL }),
+          body: JSON.stringify({ totalChunks: totalChunks, requestId: requestId }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to process image");
-      }
-
-      const result = await response.json();
+      const result = await finalResponse.json();
       const s3_url = result.s3_url;
 
       setCompleteImage(s3_url);
       setIsLoading(false);
-      setProgressValue(100);  // Set to 100 when loading is complete
-
+      setProgressValue(100);
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsLoading(false);
-      setProgressValue(100); 
+      setProgressValue(100);
     }
   };
-
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -654,7 +688,7 @@ function Page() {
                   onClick={() => {
                     setIsLoading(true);
                     handleBackToEdit();
-                    setCompleteImage("")
+                    setCompleteImage("");
                   }}
                 >
                   편집으로 돌아가기
@@ -666,7 +700,7 @@ function Page() {
                   onClick={() => {
                     setIsLoading(true);
                     handleArrowBack();
-                    setCompleteImage("")
+                    setCompleteImage("");
                   }}
                 >
                   첫 화면으로 돌아가기
