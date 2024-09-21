@@ -3,7 +3,11 @@ import React from "react";
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { Chip } from "@nextui-org/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { IoIosArrowBack } from "react-icons/io";
+
 export default function CardSection() {
+  const router = useRouter();
   const list = [
     {
       title: "처음처럼",
@@ -24,11 +28,19 @@ export default function CardSection() {
       title: "크러시",
       img: "/images/background4.png",
       price: "$5.50",
-    }
+    },
   ];
+
+  const handleArrowBack = () => {
+    router.push("/");
+  };
 
   return (
     <div className="w-full h-full gap-5 grid grid-cols-2 sm:grid-cols-2">
+      <div onClick={handleArrowBack} className="absolute top-5 left-5">
+        <IoIosArrowBack className="text-3xl cursor-pointer" />
+      </div>
+
       {list.map((item, index) => (
         <Card
           shadow="sm"
