@@ -409,7 +409,7 @@ function Page() {
                       취소
                     </Button>
                     <Button
-                      color="primary"
+                      className="bg-green-700 text-white"
                       onPress={() => {
                         handleConfirmClick();
                         onClose();
@@ -573,7 +573,7 @@ function Page() {
             {/* <Button onClick={handleUploadToS3}>S3업로드</Button> */}
 
             {pathname.split("/").pop() === "0" && (
-              <Button color="primary" onClick={onOpen}>
+              <Button className="bg-green-700 text-white" onClick={onOpen}>
                 사진업로드
               </Button>
             )}
@@ -582,16 +582,12 @@ function Page() {
                 이미지삭제
               </Button>
             )}
-            {/* {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
-              <Button color="primary" onClick={handleSaveImage}>
+            {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
+              <Button className="bg-green-700 text-white" onClick={handleSaveImage}>
                 저장하기
               </Button>
-            )} */}
-            {/* {["0","1", "2", "3"].includes(pathname.split("/").pop()) && (
-              <Button color="primary" onClick={handleSaveImage2}>
-                저장하기
-              </Button>
-            )} */}
+            )}
+
           </div>
         </>
       ) : (
@@ -606,12 +602,12 @@ function Page() {
                 className={`max-w-full max-h-full object-contain ${isIPhone ? 'shakeAnimation' : ''}`}
               />
               {isIPhone && (
-                <p className="text-blue-700 font-bold text-sm my-2">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
+                <p className="text-green-700 font-bold text-sm my-2">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
               )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
                 {!isIPhone && (
                 <Button
-                  className="w-2/3 animate-pulse"
+                  className="w-2/3 animate-pulse bg-green-700 text-white"
                   color="primary"
                   onClick={handleDownloadImageFromS3}
                 >

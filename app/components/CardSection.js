@@ -35,7 +35,7 @@ export default function CardSection() {
           key={index}
           isPressable
           onPress={() => console.log("item pressed")}
-          className="w-full h-full"
+          className="w-full h-full "
         >
           <Link className="w-full h-full" href={`/postings/${index}`}>
             <CardBody className="overflow-visible p-0">
@@ -49,7 +49,7 @@ export default function CardSection() {
                 />
               </div>
             </CardBody>
-            <CardFooter className="text-small justify-between">
+            <CardFooter className="text-small justify-between ">
               <p className="text-center w-full font-bold text-black">
                 {item.title}
               </p>

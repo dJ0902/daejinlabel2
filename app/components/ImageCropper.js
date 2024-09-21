@@ -157,7 +157,7 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
   return (
     <div className="App flex flex-col justify-center items-center gap-y-5">
       <div className="Crop-Controls flex flex-col justify-center items-center gap-y-5">
-        <Button isLoading={isLoading}color="primary" onClick={() => document.querySelector('input[type="file"]').click()}>
+        <Button isLoading={isLoading} className="bg-green-700 text-white" onClick={() => document.querySelector('input[type="file"]').click()}>
           이미지 선택
         </Button>
         <input className='hidden' type="file" accept="image/*" onChange={onSelectFile} />
