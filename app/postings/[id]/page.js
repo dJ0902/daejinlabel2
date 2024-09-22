@@ -27,6 +27,7 @@ import { Spinner } from "@nextui-org/spinner";
 import { Progress } from "@nextui-org/react";
 import { v4 as uuidv4 } from "uuid";
 import { CircularProgress } from "@nextui-org/react";
+import { TbHandClick } from "react-icons/tb";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -281,15 +282,12 @@ function Page() {
     if (isLoading) {
       const timer = setInterval(() => {
         setProgressValue((oldProgress) => {
-          let newProgress = oldProgress + 3; // Increase progress by 3
+          let newProgress = oldProgress + 2; // Increase progress by 3
           if (newProgress > 100) {
             newProgress = 100; // If progress exceeds 100, set it to 100
           }
           // progress 값에 따라 숫자를 업데이트
           setProgressValue(newProgress);
-          if (newProgress === 100) {
-            setProgressValue(0); // 다 끝나면 progressvalue를 다시 0으로 해줘
-          }
           return newProgress;
         });
       }, 100);
@@ -648,7 +646,10 @@ function Page() {
             {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
               <Button
                 className="bg-green-700 text-white"
-                onClick={handleSaveImage}
+                onClick={() => {
+                  setProgressValue(0);
+                  handleSaveImage();
+                }}
               >
                 저장하기
               </Button>
@@ -682,6 +683,11 @@ function Page() {
             />
           ) : (
             <SlideUp>
+              {/* {isIPhone && (
+                <div className="transform rotate-180 flex justify-center items-center shakeAnimation">
+                  <TbHandClick className="text-green-700 text-3xl  " />
+                </div>
+              )} */}
               <img
                 src={completeImage}
                 alt="Generated Image"
@@ -691,7 +697,7 @@ function Page() {
               />
               {isIPhone && (
                 <p className="text-green-700 font-bold text-sm my-2">
-                  ※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요
+                  ※아이폰의 경우 위 이미지를 길게 눌러서 다운로드 해주세요
                 </p>
               )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
