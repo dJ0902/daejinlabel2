@@ -22,7 +22,7 @@ function page() {
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-4 space-x-2">
             
-            <img src="/images/title.png" alt="" />
+            <img src="https://labelimages.s3.ap-northeast-2.amazonaws.com/title.png" alt="" />
             {/* <h2 className="text-2xl font-extrabold text-white">
               🏷️MY 라벨 만들기 사용법
             </h2> */}
