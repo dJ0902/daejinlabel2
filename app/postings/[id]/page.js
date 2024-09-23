@@ -380,7 +380,7 @@ function Page() {
       // dataURL에서 실제 base64 데이터만 추출
       const base64Data = dataURL.split(",")[1];
 
-      const chunkSize = 1000000; // 약 1MB
+      const chunkSize = 20000000; // 약 1MB
       const totalChunks = Math.ceil(base64Data.length / chunkSize);
       const requestId = uuidv4(); // Generate a unique requestId
 
