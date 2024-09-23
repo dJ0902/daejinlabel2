@@ -24,6 +24,10 @@ import { Rnd } from "react-rnd";
 import { CgArrowsExpandLeft } from "react-icons/cg";
 import SlideUp from "@/app/components/SlideUp";
 import { Spinner } from "@nextui-org/spinner";
+import { Progress } from "@nextui-org/react";
+import { v4 as uuidv4 } from "uuid";
+import { CircularProgress } from "@nextui-org/react";
+import { TbHandClick } from "react-icons/tb";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -42,7 +46,7 @@ function Page() {
   const [completeImage, setCompleteImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
+  const [progressValue, setProgressValue] = useState(0);
   const [rndState, setRndState] = useState({
     x: 100,
     y: 100,
@@ -228,6 +232,8 @@ function Page() {
         setGeneratedImageSrc(dataURL);
         setIsComplete(true);
 
+        setProgressValue(0);
+
         handleUploadToS3(dataURL);
         // Create a link to download the image
         // const link = document.createElement("a");
@@ -272,6 +278,25 @@ function Page() {
       });
     }
   };
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setInterval(() => {
+        setProgressValue((oldProgress) => {
+          let newProgress = oldProgress + 2; // Increase progress by 3
+          if (newProgress > 100) {
+            newProgress = 100; // If progress exceeds 100, set it to 100
+          }
+          // progress 값에 따라 숫자를 업데이트
+          setProgressValue(newProgress);
+          return newProgress;
+        });
+      }, 100);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [isLoading]);
 
   const handleDragStop = (e, data) => {
     setDraggedPosition({ x: data.x, y: data.y });
@@ -319,7 +344,6 @@ function Page() {
   const handleDownloadImageFromS3 = () => {
     if (completeImage) {
       // 모바일 기기 감지
-      
 
       if (isIPhone) {
         // 모바일 기기일 경우 새 탭에서 이미지 열기
@@ -352,35 +376,72 @@ function Page() {
   };
 
   const handleUploadToS3 = async (dataURL) => {
-    let filename = encodeURIComponent(`image_${Date.now()}.png`);
-    let res = await fetch("/api/post/image?file=" + filename);
-    res = await res.json();
+    try {
+      // dataURL에서 실제 base64 데이터만 추출
+      const base64Data = dataURL.split(",")[1];
 
-    // Convert dataURL to blob
-    const response = await fetch(dataURL);
-    const blob = await response.blob();
+      const chunkSize = 2000000; // 약 1MB
+      const totalChunks = Math.ceil(base64Data.length / chunkSize);
+      const requestId = uuidv4(); // Generate a unique requestId
 
-    // S3 업로드
-    const formData = new FormData();
-    Object.entries({ ...res.fields, file: blob }).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    let 업로드결과 = await fetch(res.url, {
-      method: "POST",
-      body: formData,
-    });
-    console.log(업로드결과);
+      for (let i = 0; i < totalChunks; i++) {
+        let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
 
-    if (업로드결과.ok) {
-      console.log("성공");
-      setCompleteImage(
-        "https://labelimages.s3.ap-northeast-2.amazonaws.com/" + filename
+        // Base64 패딩 추가 (필요한 경우)
+        while (chunk.length % 4 !== 0) {
+          chunk += "=";
+        }
+
+        const response = await fetch(
+          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              image: chunk,
+              chunkIndex: i,
+              totalChunks: totalChunks,
+              requestId: requestId,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to process image chunk ${i + 1}`);
+        }
+      }
+
+      // 모든 청크 업로드 완료 후 처리
+      const finalResponse = await fetch(
+        // "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
+        "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            totalChunks: totalChunks,
+            requestId: requestId,
+          }),
+        }
       );
+
+      const result = await finalResponse.json();
+      const s3_url = result.s3_url;
+
+      setCompleteImage(s3_url);
       setIsLoading(false);
-    } else {
-      console.log("실패");
+      setProgressValue(100);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setIsLoading(false);
+      setProgressValue(100);
     }
   };
+  console.log("isLoading:", isLoading);
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
@@ -583,42 +644,81 @@ function Page() {
               </Button>
             )}
             {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
-              <Button className="bg-green-700 text-white" onClick={handleSaveImage}>
+              <Button
+                className="bg-green-700 text-white"
+                onClick={() => {
+                  setProgressValue(0);
+                  handleSaveImage();
+                }}
+              >
                 저장하기
               </Button>
             )}
-
           </div>
         </>
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
-          {isLoading ? (
-            <Spinner color="success" />
+          {isLoading && !completeImage ? (
+            // <Spinner />
+            // <Progress
+            //   aria-label="Downloading..."
+            //   size="md"
+            //   value={progressValue}
+            //   // color="green-700"
+
+            //   showValueLabel={true}
+            //   classNames={{
+            //     base: "max-w-md",
+            //     track: "drop-shadow-md border border-default",
+            //     indicator: "bg-gradient-to-r from-green-700 to-green-600",
+            //     label: "tracking-wider font-medium text-default-600",
+            //     value: "text-green-700 font-semibold",
+            //   }}
+            <CircularProgress
+              aria-label="Loading..."
+              size="lg"
+              value={progressValue}
+              showValueLabel={true}
+              color="success"
+            />
           ) : (
             <SlideUp>
+              {/* {isIPhone && (
+                <div className="transform rotate-180 flex justify-center items-center shakeAnimation">
+                  <TbHandClick className="text-green-700 text-3xl  " />
+                </div>
+              )} */}
               <img
                 src={completeImage}
                 alt="Generated Image"
-                className={`max-w-full max-h-full object-contain ${isIPhone ? 'shakeAnimation' : ''}`}
+                className={`max-w-full max-h-full object-contain ${
+                  isIPhone ? "shakeAnimation" : ""
+                }`}
               />
               {isIPhone && (
-                <p className="text-green-700 font-bold text-sm my-2">※아이폰의 경우 이미지를 길게 눌러서 다운로드 해주세요</p>
+                <p className="text-green-700 font-bold text-sm my-2">
+                  ※아이폰의 경우 위 이미지를 길게 눌러서 다운로드 해주세요
+                </p>
               )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
-                {!isIPhone && (
-                <Button
-                  className="w-2/3 animate-pulse bg-green-700 text-white"
-                  color="primary"
-                  onClick={handleDownloadImageFromS3}
-                >
-                  다운로드
-                </Button>
+                {!isIPhone && completeImage && (
+                  <Button
+                    className="w-2/3 animate-pulse bg-green-700 text-white"
+                    color="primary"
+                    onClick={handleDownloadImageFromS3}
+                  >
+                    다운로드
+                  </Button>
                 )}
                 <Button
                   className="w-2/3 text-gray-500"
                   color="default"
                   variant="bordered"
-                  onClick={handleBackToEdit}
+                  onClick={() => {
+                    setIsLoading(true);
+                    handleBackToEdit();
+                    setCompleteImage("");
+                  }}
                 >
                   편집으로 돌아가기
                 </Button>
@@ -626,7 +726,11 @@ function Page() {
                   className="w-2/3 text-gray-500"
                   color="default"
                   variant="bordered"
-                  onClick={handleArrowBack}
+                  onClick={() => {
+                    setIsLoading(true);
+                    handleArrowBack();
+                    setCompleteImage("");
+                  }}
                 >
                   첫 화면으로 돌아가기
                 </Button>
