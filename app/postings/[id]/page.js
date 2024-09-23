@@ -28,6 +28,7 @@ import { Progress } from "@nextui-org/react";
 import { v4 as uuidv4 } from "uuid";
 import { CircularProgress } from "@nextui-org/react";
 import { TbHandClick } from "react-icons/tb";
+import imageCompression from "browser-image-compression";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -87,6 +88,22 @@ function Page() {
           }
         }, "image/png"); // Change to "image/png" to maintain transparency
       }
+    }
+  };
+
+  const compressImage = async (blob) => {
+    const options = {
+      maxSizeMB: 10,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedBlob = await imageCompression(blob, options);
+      return compressedBlob;
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      return blob; // 압축에 실패하면 원본 blob 반환
     }
   };
 
@@ -227,18 +244,15 @@ function Page() {
           ctx.fillText(title, titleX, titleY);
         }
 
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              setGeneratedImageSrc(URL.createObjectURL(blob));
-              setIsComplete(true);
-              setProgressValue(0);
-              handleUploadToS3(blob);
-            }
-          },
-          "image/png",
-          0.5
-        );
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const compressedBlob = await compressImage(blob);
+            setGeneratedImageSrc(URL.createObjectURL(compressedBlob));
+            setIsComplete(true);
+            setProgressValue(0);
+            handleUploadToS3(compressedBlob);
+          }
+        }, "image/png");
         // Create a link to download the image
         // const link = document.createElement("a");
         // link.href = dataURL;
