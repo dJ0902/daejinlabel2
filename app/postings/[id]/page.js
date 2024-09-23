@@ -227,14 +227,18 @@ function Page() {
           ctx.fillText(title, titleX, titleY);
         }
 
-        // Convert canvas to dataURL and then to a downloadable link
-        const dataURL = canvas.toDataURL("image/png");
-        setGeneratedImageSrc(dataURL);
-        setIsComplete(true);
-
-        setProgressValue(0);
-
-        handleUploadToS3(dataURL);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              setGeneratedImageSrc(URL.createObjectURL(blob));
+              setIsComplete(true);
+              setProgressValue(0);
+              handleUploadToS3(blob);
+            }
+          },
+          "image/png",
+          0.5
+        );
         // Create a link to download the image
         // const link = document.createElement("a");
         // link.href = dataURL;
@@ -375,73 +379,76 @@ function Page() {
     }
   };
 
-  const handleUploadToS3 = async (dataURL) => {
+  const handleUploadToS3 = async (blob) => {
     try {
-      // dataURL에서 실제 base64 데이터만 추출
-      const base64Data = dataURL.split(",")[1];
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        const base64Data = reader.result.split(",")[1];
 
-      const chunkSize = 2000000; // 약 1MB
-      const totalChunks = Math.ceil(base64Data.length / chunkSize);
-      const requestId = uuidv4(); // Generate a unique requestId
+        const chunkSize = 20000000; // 약 20MB
+        const totalChunks = Math.ceil(base64Data.length / chunkSize);
+        const requestId = uuidv4(); // Generate a unique requestId
 
-      for (let i = 0; i < totalChunks; i++) {
-        let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
+        for (let i = 0; i < totalChunks; i++) {
+          let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
 
-        // Base64 패딩 추가 (필요한 경우)
-        while (chunk.length % 4 !== 0) {
-          chunk += "=";
+          // Base64 패딩 추가 (필요한 경우)
+          while (chunk.length % 4 !== 0) {
+            chunk += "=";
+          }
+
+          const response = await fetch(
+            "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
+            // "http://localhost:8000/process-image-chunk",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                image: chunk,
+                chunkIndex: i,
+                totalChunks: totalChunks,
+                requestId: requestId,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`Failed to process image chunk ${i + 1}`);
+          }
         }
 
-        const response = await fetch(
-          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
+        // 모든 청크 업로드 완료 후 처리
+        const finalResponse = await fetch(
+          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
+          // "http://localhost:8000/complete-image-upload",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              image: chunk,
-              chunkIndex: i,
               totalChunks: totalChunks,
               requestId: requestId,
             }),
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`Failed to process image chunk ${i + 1}`);
-        }
-      }
+        const result = await finalResponse.json();
+        const s3_url = result.s3_url;
 
-      // 모든 청크 업로드 완료 후 처리
-      const finalResponse = await fetch(
-        // "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
-        "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            totalChunks: totalChunks,
-            requestId: requestId,
-          }),
-        }
-      );
-
-      const result = await finalResponse.json();
-      const s3_url = result.s3_url;
-
-      setCompleteImage(s3_url);
-      setIsLoading(false);
-      setProgressValue(100);
+        setCompleteImage(s3_url);
+        setIsLoading(false);
+        setProgressValue(100);
+      };
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsLoading(false);
       setProgressValue(100);
     }
   };
-  console.log("isLoading:", isLoading);
 
   return (
     <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
