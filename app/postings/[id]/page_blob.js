@@ -400,7 +400,7 @@ function Page() {
       reader.onloadend = async () => {
         const base64Data = reader.result.split(",")[1];
 
-        const chunkSize = 20000000; // 약 20MB
+        const chunkSize = 500000; // 약 500KB
         const totalChunks = Math.ceil(base64Data.length / chunkSize);
         const requestId = uuidv4(); // Generate a unique requestId
 
