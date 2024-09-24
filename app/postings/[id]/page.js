@@ -150,16 +150,16 @@ function Page() {
 
             // Draw the background image on top
             ctx.drawImage(backgroundImg, 0, 0);
-            drawTitleAndSave();
+            drawTitleAndSave(canvasWidth, canvasHeight);
           };
         } else {
           // Draw the background image if no uploaded image
           ctx.drawImage(backgroundImg, 0, 0);
-          drawTitleAndSave();
+          drawTitleAndSave(canvasWidth, canvasHeight);
         }
       };
 
-      function drawTitleAndSave() {
+      function drawTitleAndSave(canvasWidth, canvasHeight) {
         // Calculate the position of the title text based on the pathname
         const pathEnd = pathname.split("/").pop();
         let titleX,
