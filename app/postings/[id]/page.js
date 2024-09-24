@@ -43,7 +43,7 @@ function Page() {
   const router = useRouter();
   const [isComplete, setIsComplete] = useState(false);
   const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
-  const [testImage, setTestImage] = useState("/images/background1.png");
+  const [testImage, setTestImage] = useState("/images/background1.webp");
   const [completeImage, setCompleteImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -115,7 +115,7 @@ function Page() {
 
       backgroundImg.src = `/images/background${
         parseInt(pathname.split("/").pop()) + 1
-      }.png`;
+      }.webp`;
 
       backgroundImg.onload = () => {
         canvas.width = backgroundImg.width;
@@ -251,31 +251,6 @@ function Page() {
           setProgressValue(0);
           handleUploadToS3(compressedDataURL);
         });
-        // Create a link to download the image
-        // const link = document.createElement("a");
-        // link.href = dataURL;
-        // const currentTime = new Date()
-        //   .toLocaleString("ko-KR", {
-        //     year: "numeric",
-        //     month: "2-digit",
-        //     day: "2-digit",
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        //     second: "2-digit",
-        //   })
-        //   .replace(/[:\s]/g, "")
-        //   .replace(/,/g, "")
-        //   .replace(
-        //     /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-        //     "$1년$2월$3일$4시$5분$6초"
-        //   );
-        // link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
-        //        link.setAttribute("type", "image/png"); // Specify the file type
-        // link.setAttribute(
-        //   "download",
-        //   `label_${title || "untitled"}_${currentTime}.png`
-        // ); // Specify the file type
-        // link.click();
       }
     }
   };
@@ -290,21 +265,6 @@ function Page() {
       };
       reader.readAsDataURL(compressedBlob); // Read the compressed blob as dataURL
     });
-  };
-  const handleSaveImage2 = () => {
-    const backgroundElement = document.getElementById("picture");
-    if (backgroundElement) {
-      html2canvas(backgroundElement).then((canvas) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "captured_image.png";
-            link.click();
-          }
-        }, "image/png");
-      });
-    }
   };
   useEffect(() => {
     if (isLoading) {
@@ -358,11 +318,11 @@ function Page() {
           /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
           "$1년$2월$3일$4시$5분$6초"
         );
-      link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+      link.download = `label_${title || "untitled"}_${currentTime}.webp`; // Add default title
       link.setAttribute("type", "image/png"); // Specify the file type
       link.setAttribute(
         "download",
-        `label_${title || "untitled"}_${currentTime}.png`
+        `label_${title || "untitled"}_${currentTime}.webp`
       ); // Specify the file type
 
       link.click();
@@ -640,7 +600,7 @@ function Page() {
               id="background"
               src={`/images/background${
                 parseInt(pathname.split("/").pop()) + 1
-              }.png`}
+              }.webp`}
               className="object-cover w-full h-full rounded-2xl z-0"
             />
           </div>
