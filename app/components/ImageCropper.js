@@ -79,7 +79,9 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
 
   function onImageLoad(e) {
     const { width, height } = e.currentTarget
-    const crop = centerAspectCrop(width, height, 16 / 9)
+    const aspectRatio = width / height
+    setAspect(aspectRatio)
+    const crop = centerAspectCrop(width, height, aspectRatio)
     setCrop(crop)
   }
 
