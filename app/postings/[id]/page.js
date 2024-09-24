@@ -118,8 +118,20 @@ function Page() {
       }.png`;
 
       backgroundImg.onload = () => {
-        canvas.width = backgroundImg.width;
-        canvas.height = backgroundImg.height;
+        let canvasWidth = backgroundImg.width;
+        let canvasHeight = backgroundImg.height;
+
+        // 캔버스 크기 조정
+        if (canvasWidth * canvasHeight > 16777216) {
+          const scaleFactor = Math.sqrt(
+            16777216 / (canvasWidth * canvasHeight)
+          );
+          canvasWidth *= scaleFactor;
+          canvasHeight *= scaleFactor;
+        }
+
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
 
         // Draw the uploaded image if it exists
         if (uploadedImage && uploadedImgRef.current) {
@@ -127,10 +139,8 @@ function Page() {
           uploadedImg.src = uploadedImage;
 
           uploadedImg.onload = () => {
-            const scaleX =
-              backgroundImg.width / backgroundRef.current.offsetWidth;
-            const scaleY =
-              backgroundImg.height / backgroundRef.current.offsetHeight;
+            const scaleX = canvasWidth / backgroundRef.current.offsetWidth;
+            const scaleY = canvasHeight / backgroundRef.current.offsetHeight;
             const x = rndState.x * scaleX; // Use Rnd's state
             const y = rndState.y * scaleY;
             const width = rndState.width * scaleX;
@@ -161,8 +171,8 @@ function Page() {
           lineHeight;
 
         if (pathEnd === "0") {
-          titleX = backgroundImg.width / 2;
-          titleY = (backgroundImg.height * 4) / 13;
+          titleX = canvasWidth / 2;
+          titleY = (canvasHeight * 4) / 13;
           fontSize = "1000px";
           fontFamily = "YoonDokrip";
           fontWeight = "normal";
@@ -174,7 +184,7 @@ function Page() {
           ctx.textAlign = "center";
           ctx.fillText(title, titleX, titleY);
         } else if (pathEnd === "1") {
-          titleX = (backgroundImg.width * 28) / 100;
+          titleX = (canvasWidth * 28) / 100;
           fontSize = "300px";
           fontFamily = "SCDream";
           fontWeight = "700";
@@ -183,7 +193,7 @@ function Page() {
 
           // Calculate titleY so that the bottom of the last character is at 20% height
           const totalTextHeight = title.length * 1;
-          titleY = (backgroundImg.height * 50) / 100 - totalTextHeight;
+          titleY = (canvasHeight * 50) / 100 - totalTextHeight;
 
           // Adjust titleY based on the number of characters
           if (title.length === 4) {
@@ -202,7 +212,7 @@ function Page() {
             ctx.fillText(char, titleX, titleY + index * parseInt(fontSize));
           });
         } else if (pathEnd === "2") {
-          titleX = (backgroundImg.width * 28) / 100;
+          titleX = (canvasWidth * 28) / 100;
           fontSize = "500px";
           fontFamily = "SCDream";
           fontWeight = "700";
@@ -211,7 +221,7 @@ function Page() {
 
           // Calculate titleY so that the bottom of the last character is at 20% height
           const totalTextHeight = title.length * 1;
-          titleY = (backgroundImg.height * 45) / 100 - totalTextHeight;
+          titleY = (canvasHeight * 45) / 100 - totalTextHeight;
 
           // Adjust titleY based on the number of characters
           if (title.length === 4) {
@@ -230,8 +240,8 @@ function Page() {
             ctx.fillText(char, titleX, titleY + index * parseInt(fontSize));
           });
         } else if (pathEnd === "3") {
-          titleX = backgroundImg.width / 2;
-          titleY = (backgroundImg.height * 8) / 10;
+          titleX = canvasWidth / 2;
+          titleY = (canvasHeight * 8) / 10;
           fontSize = "400px";
           fontFamily = "SCDream";
           fontWeight = "normal";
@@ -256,21 +266,7 @@ function Page() {
       }
     }
   };
-  const handleSaveImage2 = () => {
-    const backgroundElement = document.getElementById("picture");
-    if (backgroundElement) {
-      html2canvas(backgroundElement).then((canvas) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "captured_image.png";
-            link.click();
-          }
-        }, "image/png");
-      });
-    }
-  };
+
   useEffect(() => {
     if (isLoading) {
       const timer = setInterval(() => {
