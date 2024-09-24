@@ -60,8 +60,8 @@ function Page() {
       const canvas = document.createElement("canvas");
       const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
       const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
-      canvas.width = completedCrop.width * scaleX;
-      canvas.height = completedCrop.height * scaleY;
+      canvas.width = imgRef.current.naturalWidth;
+      canvas.height = imgRef.current.naturalHeight;
       const ctx = canvas.getContext("2d");
 
       if (ctx) {
@@ -73,8 +73,8 @@ function Page() {
           completedCrop.height * scaleY,
           0,
           0,
-          completedCrop.width * scaleX,
-          completedCrop.height * scaleY
+          imgRef.current.naturalWidth,
+          imgRef.current.naturalHeight
         );
 
         // Convert canvas to blob and then to base64
