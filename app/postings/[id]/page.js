@@ -271,7 +271,7 @@ function Page() {
     if (isLoading) {
       const timer = setInterval(() => {
         setProgressValue((oldProgress) => {
-          let newProgress = oldProgress + 4; // Increase progress by 3
+          let newProgress = oldProgress + 3; // Increase progress by 3
           if (newProgress > 100) {
             newProgress = 100; // If progress exceeds 100, set it to 100
           }
@@ -554,7 +554,7 @@ function Page() {
                 }}
                 minWidth={100}
                 minHeight={100}
-                bounds="parent" // 부모 요소 안에서만 이동 및 크기 조절 가능
+                // Remove bounds="parent" to allow free movement
                 onDragStop={(e, d) => {
                   setRndState((prevState) => ({
                     ...prevState,
@@ -606,7 +606,7 @@ function Page() {
               src={`/images/background${
                 parseInt(pathname.split("/").pop()) + 1
               }.png`}
-              className="object-cover w-full h-full rounded-2xl z-0"
+              className="object-cover w-full h-full rounded-2xl z-0 border border-gray-300"
             />
           </div>
 
