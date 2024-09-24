@@ -253,31 +253,6 @@ function Page() {
             handleUploadToS3(compressedBlob);
           }
         }, "image/png");
-        // Create a link to download the image
-        // const link = document.createElement("a");
-        // link.href = dataURL;
-        // const currentTime = new Date()
-        //   .toLocaleString("ko-KR", {
-        //     year: "numeric",
-        //     month: "2-digit",
-        //     day: "2-digit",
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        //     second: "2-digit",
-        //   })
-        //   .replace(/[:\s]/g, "")
-        //   .replace(/,/g, "")
-        //   .replace(
-        //     /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-        //     "$1년$2월$3일$4시$5분$6초"
-        //   );
-        // link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
-        //        link.setAttribute("type", "image/png"); // Specify the file type
-        // link.setAttribute(
-        //   "download",
-        //   `label_${title || "untitled"}_${currentTime}.png`
-        // ); // Specify the file type
-        // link.click();
       }
     }
   };
@@ -413,7 +388,7 @@ function Page() {
           }
 
           const response = await fetch(
-            "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
+            "https://5ih5aln40m.execute-api.ap-northeast-2.amazonaws.com//process-image-chunk",
             // "http://localhost:8000/process-image-chunk",
             {
               method: "POST",
@@ -436,7 +411,7 @@ function Page() {
 
         // 모든 청크 업로드 완료 후 처리
         const finalResponse = await fetch(
-          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
+          "https://5ih5aln40m.execute-api.ap-northeast-2.amazonaws.com//complete-image-upload",
           // "http://localhost:8000/complete-image-upload",
           {
             method: "POST",
