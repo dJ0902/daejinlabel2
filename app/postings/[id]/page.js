@@ -43,7 +43,7 @@ function Page() {
   const router = useRouter();
   const [isComplete, setIsComplete] = useState(false);
   const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
-  const [testImage, setTestImage] = useState("/images/background1.webp");
+  const [testImage, setTestImage] = useState("/images/background1.png");
   const [completeImage, setCompleteImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -115,7 +115,7 @@ function Page() {
 
       backgroundImg.src = `/images/background${
         parseInt(pathname.split("/").pop()) + 1
-      }.webp`;
+      }.png`;
 
       backgroundImg.onload = () => {
         canvas.width = backgroundImg.width;
@@ -318,11 +318,11 @@ function Page() {
           /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
           "$1년$2월$3일$4시$5분$6초"
         );
-      link.download = `label_${title || "untitled"}_${currentTime}.webp`; // Add default title
+      link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
       link.setAttribute("type", "image/png"); // Specify the file type
       link.setAttribute(
         "download",
-        `label_${title || "untitled"}_${currentTime}.webp`
+        `label_${title || "untitled"}_${currentTime}.png`
       ); // Specify the file type
 
       link.click();
