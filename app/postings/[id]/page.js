@@ -141,13 +141,13 @@ function Page() {
           uploadedImg.onload = () => {
             const scaleX = canvasWidth / backgroundRef.current.offsetWidth;
             const scaleY = canvasHeight / backgroundRef.current.offsetHeight;
-            const x = rndState.x * scaleX; // Use Rnd's state
-            const y = rndState.y * scaleY;
-            const width = rndState.width * scaleX;
-            const height = rndState.height * scaleY;
+            const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
+            const x = rndState.x * scale; // Use Rnd's state
+            const y = rndState.y * scale;
+            const width = rndState.width * scale;
+            const height = rndState.height * scale;
 
-            ctx.drawImage(uploadedImg, x, y, 100, 100);
-
+            ctx.drawImage(uploadedImg, x, y, width, height); // Adjust width and height to match the uploaded image
             // Draw the background image on top
             ctx.drawImage(backgroundImg, 0, 0);
             drawTitleAndSave(canvasWidth, canvasHeight);
