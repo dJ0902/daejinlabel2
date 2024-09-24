@@ -271,7 +271,7 @@ function Page() {
     if (isLoading) {
       const timer = setInterval(() => {
         setProgressValue((oldProgress) => {
-          let newProgress = oldProgress + 2; // Increase progress by 3
+          let newProgress = oldProgress + 4; // Increase progress by 3
           if (newProgress > 100) {
             newProgress = 100; // If progress exceeds 100, set it to 100
           }
