@@ -113,6 +113,8 @@ function Page() {
       const ctx = canvas.getContext("2d");
       const backgroundImg = new window.Image();
 
+      // CORS 설정
+      backgroundImg.crossOrigin = "Anonymous";
       backgroundImg.src = `/images/background${
         parseInt(pathname.split("/").pop()) + 1
       }.png`;
@@ -124,6 +126,7 @@ function Page() {
         // Draw the uploaded image if it exists
         if (uploadedImage && uploadedImgRef.current) {
           const uploadedImg = new window.Image();
+          uploadedImg.crossOrigin = "Anonymous";
           uploadedImg.src = uploadedImage;
 
           uploadedImg.onload = () => {
@@ -244,6 +247,7 @@ function Page() {
           ctx.fillText(title, titleX, titleY);
         }
         const dataURL = canvas.toDataURL("image/png");
+
         // Compress the dataURL
         compressDataURL(dataURL).then((compressedDataURL) => {
           setGeneratedImageSrc(compressedDataURL);
