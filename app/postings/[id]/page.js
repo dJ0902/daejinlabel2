@@ -243,29 +243,58 @@ function Page() {
           ctx.textAlign = "center";
           ctx.fillText(title, titleX, titleY);
         }
-        const dataURL = canvas.toDataURL("image/png");
-        console.log('dataURL:',dataURL)
-        // Compress the dataURL
-        compressDataURL(dataURL).then((compressedDataURL) => {
-          setGeneratedImageSrc(compressedDataURL);
-          setIsComplete(true);
-          setProgressValue(0);
-          handleUploadToS3(compressedDataURL);
-        });
+
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const compressedBlob = await compressImage(blob);
+            setGeneratedImageSrc(URL.createObjectURL(compressedBlob));
+            setIsComplete(true);
+            setProgressValue(0);
+            handleUploadToS3(compressedBlob);
+          }
+        }, "image/png");
+        // Create a link to download the image
+        // const link = document.createElement("a");
+        // link.href = dataURL;
+        // const currentTime = new Date()
+        //   .toLocaleString("ko-KR", {
+        //     year: "numeric",
+        //     month: "2-digit",
+        //     day: "2-digit",
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        //     second: "2-digit",
+        //   })
+        //   .replace(/[:\s]/g, "")
+        //   .replace(/,/g, "")
+        //   .replace(
+        //     /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
+        //     "$1년$2월$3일$4시$5분$6초"
+        //   );
+        // link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
+        //        link.setAttribute("type", "image/png"); // Specify the file type
+        // link.setAttribute(
+        //   "download",
+        //   `label_${title || "untitled"}_${currentTime}.png`
+        // ); // Specify the file type
+        // link.click();
       }
     }
   };
-
-  const compressDataURL = async (dataURL) => {
-    const blob = await (await fetch(dataURL)).blob();
-    const compressedBlob = await compressImage(blob);
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve(reader.result); // Return the dataURL
-      };
-      reader.readAsDataURL(compressedBlob); // Read the compressed blob as dataURL
-    });
+  const handleSaveImage2 = () => {
+    const backgroundElement = document.getElementById("picture");
+    if (backgroundElement) {
+      html2canvas(backgroundElement).then((canvas) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "captured_image.png";
+            link.click();
+          }
+        }, "image/png");
+      });
+    }
   };
   useEffect(() => {
     if (isLoading) {
@@ -364,66 +393,70 @@ function Page() {
     }
   };
 
-  const handleUploadToS3 = async (dataURL) => {
+  const handleUploadToS3 = async (blob) => {
     try {
-      const base64Data = dataURL.split(",")[1];
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        const base64Data = reader.result.split(",")[1];
 
-      const chunkSize = 20000000; // 약 20MB
-      const totalChunks = Math.ceil(base64Data.length / chunkSize);
-      const requestId = uuidv4(); // Generate a unique requestId
+        const chunkSize = 500000; // 약 500KB
+        const totalChunks = Math.ceil(base64Data.length / chunkSize);
+        const requestId = uuidv4(); // Generate a unique requestId
 
-      for (let i = 0; i < totalChunks; i++) {
-        let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
+        for (let i = 0; i < totalChunks; i++) {
+          let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
 
-        // Base64 패딩 추가 (필요한 경우)
-        while (chunk.length % 4 !== 0) {
-          chunk += "=";
+          // Base64 패딩 추가 (필요한 경우)
+          while (chunk.length % 4 !== 0) {
+            chunk += "=";
+          }
+
+          const response = await fetch(
+            "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
+            // "http://localhost:8000/process-image-chunk",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                image: chunk,
+                chunkIndex: i,
+                totalChunks: totalChunks,
+                requestId: requestId,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`Failed to process image chunk ${i + 1}`);
+          }
         }
 
-        const response = await fetch(
-          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
-          // "http://localhost:8000/process-image-chunk",
+        // 모든 청크 업로드 완료 후 처리
+        const finalResponse = await fetch(
+          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
+          // "http://localhost:8000/complete-image-upload",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              image: chunk,
-              chunkIndex: i,
               totalChunks: totalChunks,
               requestId: requestId,
             }),
           }
         );
 
-        if (!response.ok) {
-          throw new Error(`Failed to process image chunk ${i + 1}`);
-        }
-      }
+        const result = await finalResponse.json();
+        const s3_url = result.s3_url;
 
-      // 모든 청크 업로드 완료 후 처리
-      const finalResponse = await fetch(
-        "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
-        // "http://localhost:8000/complete-image-upload",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            totalChunks: totalChunks,
-            requestId: requestId,
-          }),
-        }
-      );
-
-      const result = await finalResponse.json();
-      const s3_url = result.s3_url;
-
-      setCompleteImage(s3_url);
-      setIsLoading(false);
-      setProgressValue(100);
+        setCompleteImage(s3_url);
+        setIsLoading(false);
+        setProgressValue(100);
+      };
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsLoading(false);
