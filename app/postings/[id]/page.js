@@ -243,16 +243,14 @@ function Page() {
           ctx.textAlign = "center";
           ctx.fillText(title, titleX, titleY);
         }
-
-        canvas.toBlob(async (blob) => {
-          if (blob) {
-            const compressedBlob = await compressImage(blob);
-            setGeneratedImageSrc(URL.createObjectURL(compressedBlob));
-            setIsComplete(true);
-            setProgressValue(0);
-            handleUploadToS3(compressedBlob);
-          }
-        }, "image/png");
+        const dataURL = canvas.toDataURL("image/png");
+        // Compress the dataURL
+        compressDataURL(dataURL).then((compressedDataURL) => {
+          setGeneratedImageSrc(compressedDataURL);
+          setIsComplete(true);
+          setProgressValue(0);
+          handleUploadToS3(compressedDataURL);
+        });
         // Create a link to download the image
         // const link = document.createElement("a");
         // link.href = dataURL;
@@ -280,6 +278,18 @@ function Page() {
         // link.click();
       }
     }
+  };
+
+  const compressDataURL = async (dataURL) => {
+    const blob = await (await fetch(dataURL)).blob();
+    const compressedBlob = await compressImage(blob);
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result); // Return the dataURL
+      };
+      reader.readAsDataURL(compressedBlob); // Read the compressed blob as dataURL
+    });
   };
   const handleSaveImage2 = () => {
     const backgroundElement = document.getElementById("picture");
@@ -393,70 +403,66 @@ function Page() {
     }
   };
 
-  const handleUploadToS3 = async (blob) => {
+  const handleUploadToS3 = async (dataURL) => {
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = async () => {
-        const base64Data = reader.result.split(",")[1];
+      const base64Data = dataURL.split(",")[1];
 
-        const chunkSize = 20000000; // 약 20MB
-        const totalChunks = Math.ceil(base64Data.length / chunkSize);
-        const requestId = uuidv4(); // Generate a unique requestId
+      const chunkSize = 20000000; // 약 20MB
+      const totalChunks = Math.ceil(base64Data.length / chunkSize);
+      const requestId = uuidv4(); // Generate a unique requestId
 
-        for (let i = 0; i < totalChunks; i++) {
-          let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
+      for (let i = 0; i < totalChunks; i++) {
+        let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
 
-          // Base64 패딩 추가 (필요한 경우)
-          while (chunk.length % 4 !== 0) {
-            chunk += "=";
-          }
-
-          const response = await fetch(
-            "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
-            // "http://localhost:8000/process-image-chunk",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                image: chunk,
-                chunkIndex: i,
-                totalChunks: totalChunks,
-                requestId: requestId,
-              }),
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error(`Failed to process image chunk ${i + 1}`);
-          }
+        // Base64 패딩 추가 (필요한 경우)
+        while (chunk.length % 4 !== 0) {
+          chunk += "=";
         }
 
-        // 모든 청크 업로드 완료 후 처리
-        const finalResponse = await fetch(
-          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
-          // "http://localhost:8000/complete-image-upload",
+        const response = await fetch(
+          "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
+          // "http://localhost:8000/process-image-chunk",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              image: chunk,
+              chunkIndex: i,
               totalChunks: totalChunks,
               requestId: requestId,
             }),
           }
         );
 
-        const result = await finalResponse.json();
-        const s3_url = result.s3_url;
+        if (!response.ok) {
+          throw new Error(`Failed to process image chunk ${i + 1}`);
+        }
+      }
 
-        setCompleteImage(s3_url);
-        setIsLoading(false);
-        setProgressValue(100);
-      };
+      // 모든 청크 업로드 완료 후 처리
+      const finalResponse = await fetch(
+        "https://rksbcz4sea.execute-api.ap-northeast-2.amazonaws.com/complete-image-upload",
+        // "http://localhost:8000/complete-image-upload",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            totalChunks: totalChunks,
+            requestId: requestId,
+          }),
+        }
+      );
+
+      const result = await finalResponse.json();
+      const s3_url = result.s3_url;
+
+      setCompleteImage(s3_url);
+      setIsLoading(false);
+      setProgressValue(100);
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsLoading(false);
