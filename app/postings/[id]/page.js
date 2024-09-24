@@ -554,6 +554,7 @@ function Page() {
                 }}
                 minWidth={100}
                 minHeight={100}
+                lockAspectRatio={true} // Maintain 1:1 aspect ratio
                 // Remove bounds="parent" to allow free movement
                 onDragStop={(e, d) => {
                   setRndState((prevState) => ({
