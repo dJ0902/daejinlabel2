@@ -118,14 +118,20 @@ function Page() {
       }.png`;
 
       backgroundImg.onload = () => {
-        const canvasWidth = backgroundImg.width;
-        const canvasHeight = backgroundImg.height;
+        let canvasWidth = backgroundImg.width;
+        let canvasHeight = backgroundImg.height;
+
+        // 캔버스 크기 조정
+        if (canvasWidth * canvasHeight > 16777216) {
+          const scaleFactor = Math.sqrt(
+            16777216 / (canvasWidth * canvasHeight)
+          );
+          canvasWidth *= scaleFactor;
+          canvasHeight *= scaleFactor;
+        }
 
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
-
-        // Draw the background image first
-        ctx.drawImage(backgroundImg, 0, 0, canvasWidth, canvasHeight);
 
         // Draw the uploaded image if it exists
         if (uploadedImage && uploadedImgRef.current) {
@@ -140,12 +146,15 @@ function Page() {
             const width = rndState.width * scaleX;
             const height = rndState.height * scaleY;
 
-            // Draw the uploaded image maintaining its original aspect ratio
-            ctx.drawImage(uploadedImg, x, y, width, height);
+            ctx.drawImage(uploadedImg, x, y, 100, 100);
 
+            // Draw the background image on top
+            ctx.drawImage(backgroundImg, 0, 0);
             drawTitleAndSave(canvasWidth, canvasHeight);
           };
         } else {
+          // Draw the background image if no uploaded image
+          ctx.drawImage(backgroundImg, 0, 0);
           drawTitleAndSave(canvasWidth, canvasHeight);
         }
       };

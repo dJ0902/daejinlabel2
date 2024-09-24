@@ -34,16 +34,14 @@ function centerAspectCrop(
   )
 }
 
-export default function ImageCropper({uploadedImage, setUploadedImage,handleConfirmClick,imgRef,setCompletedCrop,completedCrop}) {
+export default function ImageCropper({uploadedImage, setUploadedImage, handleConfirmClick, imgRef, setCompletedCrop, completedCrop}) {
   const previewCanvasRef = useRef(null)
-  // const imgRef = useRef(null)
   const hiddenAnchorRef = useRef(null)
   const blobUrlRef = useRef('')
   const [crop, setCrop] = useState()
-  // const [completedCrop, setCompletedCrop] = useState()
   const [scale, setScale] = useState(1)
   const [rotate, setRotate] = useState(0)
-  const [aspect, setAspect] = useState(undefined)
+  const [aspect, setAspect] = useState(1) // 비율을 1:1로 설정
   const [isLoading, setIsLoading] = useState(false)
 
   async function onSelectFile(e) {
@@ -79,58 +77,8 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
 
   function onImageLoad(e) {
     const { width, height } = e.currentTarget
-    const aspectRatio = width / height
-    setAspect(aspectRatio)
-    const crop = centerAspectCrop(width, height, aspectRatio)
+    const crop = centerAspectCrop(width, height, 1) // 1:1 비율로 설정
     setCrop(crop)
-  }
-
-  async function onDownloadCropClick() {
-    const image = imgRef.current
-    const previewCanvas = previewCanvasRef.current
-    if (!image || !previewCanvas || !completedCrop) {
-      throw new Error('Crop canvas does not exist')
-    }
-
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
-
-    const offscreen = new OffscreenCanvas(
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
-    )
-    const ctx = offscreen.getContext('2d', { alpha: true }) // Ensure alpha channel is enabled
-    if (!ctx) {
-      throw new Error('No 2d context')
-    }
-
-    // Clear the canvas to ensure transparency
-    ctx.clearRect(0, 0, offscreen.width, offscreen.height)
-
-    ctx.drawImage(
-      previewCanvas,
-      0,
-      0,
-      previewCanvas.width,
-      previewCanvas.height,
-      0,
-      0,
-      offscreen.width,
-      offscreen.height,
-    )
-    const blob = await offscreen.convertToBlob({
-      type: 'image/png', // Ensure the image format supports transparency
-    })
-
-    if (blobUrlRef.current) {
-      URL.revokeObjectURL(blobUrlRef.current)
-    }
-    blobUrlRef.current = URL.createObjectURL(blob)
-
-    if (hiddenAnchorRef.current) {
-      hiddenAnchorRef.current.href = blobUrlRef.current
-      hiddenAnchorRef.current.click()
-    }
   }
 
   useDebounceEffect(
@@ -141,7 +89,6 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
         imgRef.current &&
         previewCanvasRef.current
       ) {
-        // We use canvasPreview as it's much faster than imgPreview.
         canvasPreview(
           imgRef.current,
           previewCanvasRef.current,
@@ -154,7 +101,6 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
     100,
     [completedCrop, scale, rotate],
   )
-
 
   return (
     <div className="App flex flex-col justify-center items-center gap-y-5">
@@ -170,7 +116,7 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
             crop={crop}
             onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={(c) => setCompletedCrop(c)}
-            aspect={aspect}
+            aspect={1} // 비율을 1:1로 고정
             minHeight={100}
           >
             <img
@@ -181,16 +127,10 @@ export default function ImageCropper({uploadedImage, setUploadedImage,handleConf
               onLoad={onImageLoad}
             />
           </ReactCrop>
-        ):(
+        ) : (
           <img src="/images/noimage.jpg" alt="Crop me" />
         )}
       </div>
-      {/* {!!completedCrop && (
-        <Button color="primary" onClick={handleConfirmClick}>
-          확인
-        </Button>
-      )} */}
-      
     </div>
   )
 }
