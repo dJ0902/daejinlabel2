@@ -122,15 +122,6 @@ function Page() {
         let canvasWidth = backgroundImg.width;
         let canvasHeight = backgroundImg.height;
 
-        // 캔버스 크기 조정
-        if (canvasWidth * canvasHeight > 16777216) {
-          const scaleFactor = Math.sqrt(
-            16777216 / (canvasWidth * canvasHeight)
-          );
-          canvasWidth *= scaleFactor;
-          canvasHeight *= scaleFactor;
-        }
-
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
 
