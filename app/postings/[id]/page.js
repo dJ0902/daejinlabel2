@@ -165,7 +165,7 @@ function Page() {
         if (pathEnd === "0") {
           titleX = canvasWidth / 2;
           titleY = (canvasHeight * 4) / 13;
-          fontSize = "1000px";
+          fontSize = "870px";
           fontFamily = "YoonDokrip";
           fontWeight = "normal";
           letterSpacing = "normal";
@@ -485,8 +485,8 @@ function Page() {
                   style={{
                     fontFamily: "YoonDokrip",
                     fontWeight: 700,
-                    fontSize: `${(boxSize.width / 5).toFixed(1)}px`,
-                    top: "8%",
+                    fontSize: `${(boxSize.width * 0.215).toFixed(3)}px`,
+                    top: "6%",
                   }}
                 >
                   {title}
