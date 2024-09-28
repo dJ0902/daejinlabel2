@@ -29,6 +29,7 @@ import { v4 as uuidv4 } from "uuid";
 import { CircularProgress } from "@nextui-org/react";
 import { TbHandClick } from "react-icons/tb";
 import imageCompression from "browser-image-compression";
+import { useBoxSize } from "./useBoxSize";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -37,7 +38,7 @@ function Page() {
   const [title, setTitle] = useState("");
   const [draggedPosition, setDraggedPosition] = useState({ x: 0, y: 0 });
   const imgRef = useRef(null);
-  const backgroundRef = useRef(null);
+  const { ref: backgroundRef, boxSize } = useBoxSize();
   const uploadedImgRef = useRef(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -484,15 +485,22 @@ function Page() {
             className="relative w-full h-auto"
             ref={backgroundRef}
           >
-            {pathname.split("/").pop() === "0" && (
-              <div
-                id="title"
-                className="title-text w-full flex justify-center items-center absolute top-2.5 left-1/2 transform -translate-x-1/2 text-[62px] text-black pt-1"
-                style={{ fontFamily: "YoonDokrip", fontWeight: 700 }}
-              >
-                {title}
-              </div>
-            )}
+            {pathname.split("/").pop() === "0" &&
+              backgroundRef &&
+              backgroundRef.current && (
+                <div
+                  id="title"
+                  className="title-text w-full flex justify-center items-center absolute left-1/2 transform -translate-x-1/2  text-black pt-1"
+                  style={{
+                    fontFamily: "YoonDokrip",
+                    fontWeight: 700,
+                    fontSize: `${(boxSize.width / 5).toFixed(1)}px`,
+                    top: "8%",
+                  }}
+                >
+                  {title}
+                </div>
+              )}
             {pathname.split("/").pop() === "1" && (
               <div
                 className="title-text w-full flex flex-col justify-center items-center absolute bottom-[30%] left-[28%] transform -translate-x-1/2 text-[30px] text-black"
