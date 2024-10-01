@@ -471,6 +471,16 @@ function Page() {
             <IoIosArrowBack className="text-3xl cursor-pointer" />
           </div>
 
+          <ul className="list-inside list-disc text-sm text-justify">
+            <li>
+              비방, 비하, 욕설, 성적 수치심 등 타인에게 불쾌감을 주는 문구는
+              금지합니다.
+            </li>
+            <li>
+              해당 이미지는 특정 단체나 기관, 개인의 의견을 대표하지 않습니다.
+            </li>
+          </ul>
+
           <div
             id="picture"
             className="relative w-full h-auto"
@@ -675,6 +685,16 @@ function Page() {
             />
           ) : (
             <SlideUp>
+              <ul className="list-inside list-disc text-sm text-justify mb-3">
+                <li className="mb-1">
+                  비방, 비하, 욕설, 성적 수치심 등 타인에게 불쾌감을 주는 문구는
+                  금지합니다.
+                </li>
+                <li>
+                  해당 이미지는 특정 단체나 기관, 개인의 의견을 대표하지
+                  않습니다.
+                </li>
+              </ul>
               {/* {isIPhone && (
                 <div className="transform rotate-180 flex justify-center items-center shakeAnimation">
                   <TbHandClick className="text-green-700 text-3xl  " />
@@ -689,7 +709,7 @@ function Page() {
               />
               {isIPhone && (
                 <p className="text-green-700 font-bold text-sm my-2">
-                  ※아이폰의 경우 위 이미지를 길게 눌러서 다운로드 해주세요
+                  ※ 아이폰의 경우 위 이미지를 길게 눌러서 다운로드 해주세요
                 </p>
               )}
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
