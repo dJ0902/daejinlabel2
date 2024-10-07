@@ -14,21 +14,21 @@ export default function CardSection() {
       img: "/images/background1.png",
       price: "$5.50",
     },
-    {
-      title: "새로",
-      img: "/images/background2.png",
-      price: "$5.50",
-    },
-    {
-      title: "새로살구",
-      img: "/images/background3.png",
-      price: "$5.50",
-    },
-    {
-      title: "크러시",
-      img: "/images/background4.png",
-      price: "$5.50",
-    },
+    // {
+    //   title: "새로",
+    //   img: "/images/background2.png",
+    //   price: "$5.50",
+    // },
+    // {
+    //   title: "새로살구",
+    //   img: "/images/background3.png",
+    //   price: "$5.50",
+    // },
+    // {
+    //   title: "크러시",
+    //   img: "/images/background4.png",
+    //   price: "$5.50",
+    // },
   ];
 
   const handleArrowBack = () => {
@@ -36,7 +36,8 @@ export default function CardSection() {
   };
 
   return (
-    <div className="w-full h-full gap-5 grid grid-cols-2 sm:grid-cols-2">
+    // <div className="w-full h-full gap-5 grid grid-cols-2 sm:grid-cols-2">
+    <div className="w-full h-full">
       <div onClick={handleArrowBack} className="absolute top-5 left-5">
         <IoIosArrowBack className="text-3xl cursor-pointer" />
       </div>
@@ -56,7 +57,8 @@ export default function CardSection() {
                   shadow="sm"
                   radius="lg"
                   alt={item.title}
-                  className="w-full h-[20vh] object-fill rounded-2xl shadow-md"
+                  // className="w-full h-[20vh] object-fill rounded-2xl shadow-md"
+                  className="w-full object-fill rounded-2xl shadow-md"
                   src={item.img}
                 />
               </div>
