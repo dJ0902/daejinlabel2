@@ -616,7 +616,7 @@ function Page() {
               src={`/images/background${
                 parseInt(pathname.split("/").pop()) + 1
               }.png`}
-              className="object-cover w-full h-full rounded-2xl z-0 border border-gray-300"
+              className="object-cover w-full h-full rounded-2xl z-0 border-3 border-green-700"
             />
           </div>
 
