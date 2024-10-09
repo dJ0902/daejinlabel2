@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import { Image } from "@nextui-org/react";
-import { Input } from "@nextui-org/react";
 import {
+  CircularProgress,
+  Input,
   Modal,
   ModalContent,
   ModalHeader,
@@ -10,33 +9,24 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Skeleton,
-  Card,
 } from "@nextui-org/react";
-import ImageCropper from "../../components/ImageCropper";
-import Draggable from "react-draggable"; // react-draggable 라이브러리를 추가해야 합니다
-import { usePathname } from "next/navigation";
-import { IoIosArrowBack } from "react-icons/io";
-import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import html2canvas from "html2canvas";
-import { Rnd } from "react-rnd";
-import { CgArrowsExpandLeft } from "react-icons/cg";
-import SlideUp from "@/app/components/SlideUp";
-import { Spinner } from "@nextui-org/spinner";
-import { Progress } from "@nextui-org/react";
-import { v4 as uuidv4 } from "uuid";
-import { CircularProgress } from "@nextui-org/react";
-import { TbHandClick } from "react-icons/tb";
 import imageCompression from "browser-image-compression";
-import { useBoxSize } from "./useBoxSize";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect } from "react";
+import { IoIosArrowBack } from "react-icons/io";
+import { CgArrowsExpandLeft } from "react-icons/cg";
+import { Rnd } from "react-rnd";
+import { v4 as uuidv4 } from "uuid";
+
+import ImageCropper from "@/components/ImageCropper";
+import SlideUp from "@/components/SlideUp";
+import { useBoxSize } from "@/hooks/useBoxSize";
 
 function Page() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [uploadedImage, setUploadedImage] = useState(null);
   const [completedCrop, setCompletedCrop] = useState();
   const [title, setTitle] = useState("");
-  const [draggedPosition, setDraggedPosition] = useState({ x: 0, y: 0 });
   const imgRef = useRef(null);
   const { ref: backgroundRef, boxSize } = useBoxSize();
   const uploadedImgRef = useRef(null);
@@ -44,7 +34,6 @@ function Page() {
   const router = useRouter();
   const [isComplete, setIsComplete] = useState(false);
   const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
-  const [testImage, setTestImage] = useState("/images/background1.png");
   const [completeImage, setCompleteImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -279,9 +268,6 @@ function Page() {
     }
   }, [isLoading]);
 
-  const handleDragStop = (e, data) => {
-    setDraggedPosition({ x: data.x, y: data.y });
-  };
   const handleArrowBack = () => {
     router.push("/postinglist");
   };
@@ -290,36 +276,6 @@ function Page() {
     setTitle("");
     setUploadedImage(null);
     setIsComplete(false);
-  };
-
-  const handleDownload = () => {
-    if (generatedImageSrc) {
-      const link = document.createElement("a");
-      link.href = generatedImageSrc;
-      const currentTime = new Date()
-        .toLocaleString("ko-KR", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-        .replace(/[:\s]/g, "")
-        .replace(/,/g, "")
-        .replace(
-          /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/,
-          "$1년$2월$3일$4시$5분$6초"
-        );
-      link.download = `label_${title || "untitled"}_${currentTime}.png`; // Add default title
-      link.setAttribute("type", "image/png"); // Specify the file type
-      link.setAttribute(
-        "download",
-        `label_${title || "untitled"}_${currentTime}.png`
-      ); // Specify the file type
-
-      link.click();
-    }
   };
 
   const handleDownloadImageFromS3 = () => {
@@ -661,21 +617,6 @@ function Page() {
       ) : (
         <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
           {isLoading && !completeImage ? (
-            // <Spinner />
-            // <Progress
-            //   aria-label="Downloading..."
-            //   size="md"
-            //   value={progressValue}
-            //   // color="green-700"
-
-            //   showValueLabel={true}
-            //   classNames={{
-            //     base: "max-w-md",
-            //     track: "drop-shadow-md border border-default",
-            //     indicator: "bg-gradient-to-r from-green-700 to-green-600",
-            //     label: "tracking-wider font-medium text-default-600",
-            //     value: "text-green-700 font-semibold",
-            //   }}
             <CircularProgress
               aria-label="Loading..."
               size="lg"

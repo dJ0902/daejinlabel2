@@ -1,11 +1,9 @@
 "use client";
-import React from "react";
-import ImageOverlay from "@/app/components/ImageOverlay";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { MdOutlineDesignServices } from "react-icons/md";
+import React from "react";
 
-const Intoruction = () => {
+const Introduction = () => {
   const router = useRouter();
 
   return (
@@ -21,14 +19,15 @@ const Intoruction = () => {
 
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-4 space-x-2">
-            
-            <img src="https://labelimages.s3.ap-northeast-2.amazonaws.com/title.png" alt="" />
+            <img
+              src="https://labelimages.s3.ap-northeast-2.amazonaws.com/title.png"
+              alt=""
+            />
             {/* <h2 className="text-2xl font-extrabold text-white">
               🏷️MY 라벨 만들기 사용법
             </h2> */}
-            
           </div>
-          
+
           <div className="space-y-4 border-4 border-white p-4 rounded-lg bg-green-700 bg-opacity-80">
             {[
               "상단에 QR코드를 스캔해주세요.",
@@ -44,17 +43,21 @@ const Intoruction = () => {
                   {index + 1}
                 </div>
                 <div>
-                <p className="text-white font-bold text-small">{step}</p>
+                  <p className="text-white font-bold text-small">{step}</p>
                 </div>
-                
               </div>
             ))}
           </div>
         </div>
       </div>
-      <Button  className="bg-green-700 text-white" onClick={() => router.push("/postinglist")}>꾸미러 가기</Button>
+      <Button
+        className="bg-green-700 text-white"
+        onClick={() => router.push("/postinglist")}
+      >
+        꾸미러 가기
+      </Button>
     </div>
-  )
-}
+  );
+};
 
-export default Intoruction
+export default Introduction;

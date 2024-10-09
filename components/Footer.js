@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+
 function Footer() {
   return (
     <footer class=" rounded-lg m-4 w-screen md:w-1/2">
@@ -14,7 +15,11 @@ function Footer() {
             </span> */}
           </div>
           <div class="mt-4">
-            <Link href="https://7sunglabels.vercel.app/" target="_blank" class="text-blue-500 hover:underline">
+            <Link
+              href="https://7sunglabels.vercel.app/"
+              target="_blank"
+              class="text-blue-500 hover:underline"
+            >
               https://7sunglabels.vercel.app/
             </Link>
           </div>

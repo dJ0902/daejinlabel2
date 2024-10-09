@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Script from "next/script";
 
 function Carousel() {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -14,18 +12,6 @@ function Carousel() {
 
     return () => clearInterval(interval);
   }, []);
-
-  const goToSlide = (slideIndex) => {
-    setActiveSlide(slideIndex);
-  };
-
-  const goToPrevSlide = () => {
-    setActiveSlide((prevSlide) => (prevSlide - 1 + totalSlides) % totalSlides);
-  };
-
-  const goToNextSlide = () => {
-    setActiveSlide((prevSlide) => (prevSlide + 1) % totalSlides);
-  };
 
   return (
     <div
@@ -122,7 +108,6 @@ function Carousel() {
               </div>
             </div>
           </li>
-          
         </ul>
       </div>
 

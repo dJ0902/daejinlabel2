@@ -1,21 +1,14 @@
 "use client";
-import Script from "next/script";
-import React from "react";
 import {
   Navbar,
   NavbarBrand,
-  NavbarContent,
-  NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
-  NavbarMenuToggle,
   Link,
-  Button,
   Divider,
 } from "@nextui-org/react";
-import { Icon } from "@iconify/react";
+import React from "react";
 
-import { AcmeIcon } from "./acme";
 import { cn } from "./cn";
 
 const menuItems = ["Home"];
@@ -40,12 +33,11 @@ export default function Nav(props) {
       {/* Left Content */}
       <Link href="/">
         <NavbarBrand>
-          <span className="ml-2 text-2xl font-bold text-black">커스텀 라벨</span>
+          <span className="ml-2 text-2xl font-bold text-black">
+            커스텀 라벨
+          </span>
         </NavbarBrand>
       </Link>
-
-      
-
 
       <NavbarMenu
         className="top-[calc(var(--navbar-height)_-_1px)] max-h-fit bg-default-200/50 pb-6 pt-6 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
@@ -59,8 +51,6 @@ export default function Nav(props) {
           },
         }}
       >
-
-
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
             <Link className="mb-2 w-full text-default-500" href="#" size="md">
@@ -70,7 +60,6 @@ export default function Nav(props) {
           </NavbarMenuItem>
         ))}
       </NavbarMenu>
-
     </Navbar>
   );
 }

@@ -1,9 +1,8 @@
 "use client";
-import React from "react";
-import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
-import { Chip } from "@nextui-org/react";
+import { Card, CardBody, CardFooter } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { IoIosArrowBack } from "react-icons/io";
 
 export default function CardSection() {
