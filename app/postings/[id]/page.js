@@ -458,7 +458,7 @@ function Page() {
               backgroundRef.current && (
                 <div
                   id="title"
-                  className="title-text w-full flex justify-center items-center absolute left-1/2 transform -translate-x-1/2  text-black pt-1"
+                  className="title-text w-full flex justify-center items-center absolute left-1/2 transform -translate-x-1/2  text-black pt-1 pl-[12px]"
                   style={{
                     fontFamily: "YoonDokrip",
                     fontWeight: 700,
@@ -581,7 +581,7 @@ function Page() {
               alt="Background Image"
               id="background"
               src={`/images/background${templateNumber}.png`}
-              className="object-cover w-full h-full rounded-2xl z-0 border-[12px] border-green-700"
+              className="object-cover w-[calc(100%-12px)] rounded-2xl z-0 box-content border-[12px] border-green-700"
             />
           </div>
 
