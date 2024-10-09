@@ -23,27 +23,32 @@ import SlideUp from "@/components/SlideUp";
 import { useBoxSize } from "@/hooks/useBoxSize";
 
 function Page() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [uploadedImage, setUploadedImage] = useState(null);
-  const [completedCrop, setCompletedCrop] = useState();
   const [title, setTitle] = useState("");
-  const imgRef = useRef(null);
-  const { ref: backgroundRef, boxSize } = useBoxSize();
-  const uploadedImgRef = useRef(null);
-  const pathname = usePathname();
-  const router = useRouter();
-  const [isComplete, setIsComplete] = useState(false);
-  const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
-  const [completeImage, setCompleteImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const [progressValue, setProgressValue] = useState(0);
+  const [completedCrop, setCompletedCrop] = useState();
   const [rndState, setRndState] = useState({
     x: 100,
     y: 100,
     width: 200,
     height: 200,
   }); // State to track Rnd position and size
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [progressValue, setProgressValue] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [generatedImageSrc, setGeneratedImageSrc] = useState(null);
+  const [completeImage, setCompleteImage] = useState(null); // 완성된 이미지
+
+  const { ref: backgroundRef, boxSize } = useBoxSize();
+  const imgRef = useRef(null);
+  const uploadedImgRef = useRef(null);
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const templateNumber = pathname.split("/")[2];
 
   const handleConfirmClick = () => {
     if (imgRef.current && completedCrop) {
@@ -98,14 +103,13 @@ function Page() {
   };
 
   const handleSaveImage = () => {
+    console.log("handleSaveImage start:", new Date());
     if (backgroundRef.current) {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       const backgroundImg = new window.Image();
 
-      backgroundImg.src = `/images/background${
-        parseInt(pathname.split("/").pop()) + 1
-      }.png`;
+      backgroundImg.src = `/images/background${templateNumber}.png`;
 
       backgroundImg.onload = () => {
         let canvasWidth = backgroundImg.width;
@@ -142,7 +146,6 @@ function Page() {
 
       function drawTitleAndSave(canvasWidth, canvasHeight) {
         // Calculate the position of the title text based on the pathname
-        const pathEnd = pathname.split("/").pop();
         let titleX,
           titleY,
           fontSize,
@@ -151,10 +154,10 @@ function Page() {
           letterSpacing,
           lineHeight;
 
-        if (pathEnd === "0") {
+        if (templateNumber === "0") {
           titleX = canvasWidth / 2;
           titleY = (canvasHeight * 4) / 13;
-          fontSize = "870px";
+          fontSize = "430px";
           fontFamily = "YoonDokrip";
           fontWeight = "normal";
           letterSpacing = "normal";
@@ -164,7 +167,7 @@ function Page() {
           ctx.fillStyle = "black";
           ctx.textAlign = "center";
           ctx.fillText(title, titleX, titleY);
-        } else if (pathEnd === "1") {
+        } else if (templateNumber === "1") {
           titleX = (canvasWidth * 28) / 100;
           fontSize = "300px";
           fontFamily = "SCDream";
@@ -192,7 +195,7 @@ function Page() {
           chars.forEach((char, index) => {
             ctx.fillText(char, titleX, titleY + index * parseInt(fontSize));
           });
-        } else if (pathEnd === "2") {
+        } else if (templateNumber === "2") {
           titleX = (canvasWidth * 28) / 100;
           fontSize = "500px";
           fontFamily = "SCDream";
@@ -220,7 +223,7 @@ function Page() {
           chars.forEach((char, index) => {
             ctx.fillText(char, titleX, titleY + index * parseInt(fontSize));
           });
-        } else if (pathEnd === "3") {
+        } else if (templateNumber === "3") {
           titleX = canvasWidth / 2;
           titleY = (canvasHeight * 8) / 10;
           fontSize = "400px";
@@ -270,6 +273,7 @@ function Page() {
 
   const handleArrowBack = () => {
     router.push("/postinglist");
+    setCompleteImage("");
   };
 
   const handleBackToEdit = () => {
@@ -331,8 +335,9 @@ function Page() {
             chunk += "=";
           }
 
+          console.log("/process-image-chunk start:", new Date());
           const response = await fetch(
-            "https://5ih5aln40m.execute-api.ap-northeast-2.amazonaws.com//process-image-chunk",
+            "https://5ih5aln40m.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
             // "http://localhost:8000/process-image-chunk",
             {
               method: "POST",
@@ -347,11 +352,14 @@ function Page() {
               }),
             }
           );
+          console.log("/process-image-chunk end:", new Date());
 
           if (!response.ok) {
             throw new Error(`Failed to process image chunk ${i + 1}`);
           }
         }
+
+        console.log("/complete-image-upload start:", new Date());
 
         // 모든 청크 업로드 완료 후 처리
         const finalResponse = await fetch(
@@ -368,6 +376,7 @@ function Page() {
             }),
           }
         );
+        console.log("/complete-image-upload end:", new Date());
 
         const result = await finalResponse.json();
         const s3_url = result.s3_url;
@@ -394,8 +403,8 @@ function Page() {
                   <ModalHeader className="flex flex-col gap-1">
                     이미지 편집
                   </ModalHeader>
+
                   <ModalBody className="flex max-h-[80vh] overflow-y-auto">
-                    {/* <img src="/images/noimage.jpg" alt=""  className="w-full h-full"/> */}
                     <ImageCropper
                       uploadedImage={uploadedImage}
                       setUploadedImage={setUploadedImage}
@@ -405,6 +414,7 @@ function Page() {
                       completedCrop={completedCrop}
                     />
                   </ModalBody>
+
                   <ModalFooter>
                     <Button color="danger" variant="light" onPress={onClose}>
                       취소
@@ -423,6 +433,7 @@ function Page() {
               )}
             </ModalContent>
           </Modal>
+
           <div onClick={handleArrowBack} className="absolute top-5 left-5">
             <IoIosArrowBack className="text-3xl cursor-pointer" />
           </div>
@@ -442,7 +453,7 @@ function Page() {
             className="relative w-full h-auto"
             ref={backgroundRef}
           >
-            {pathname.split("/").pop() === "0" &&
+            {templateNumber === "0" &&
               backgroundRef &&
               backgroundRef.current && (
                 <div
@@ -458,7 +469,7 @@ function Page() {
                   {title}
                 </div>
               )}
-            {pathname.split("/").pop() === "1" && (
+            {templateNumber === "1" && (
               <div
                 className="title-text w-full flex flex-col justify-center items-center absolute bottom-[30%] left-[28%] transform -translate-x-1/2 text-[30px] text-black"
                 id="title"
@@ -476,7 +487,7 @@ function Page() {
                 ))}
               </div>
             )}
-            {pathname.split("/").pop() === "2" && (
+            {templateNumber === "2" && (
               <div
                 id="title"
                 className="title-text w-full flex flex-col justify-center items-center absolute bottom-[35%] left-[28%] transform -translate-x-1/2 text-[30px] text-black"
@@ -494,7 +505,7 @@ function Page() {
                 ))}
               </div>
             )}
-            {pathname.split("/").pop() === "3" && (
+            {templateNumber === "3" && (
               <div
                 id="title"
                 className="title-text w-full flex flex-col justify-center items-center absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[24px] text-black"
@@ -569,9 +580,7 @@ function Page() {
             <img
               alt="Background Image"
               id="background"
-              src={`/images/background${
-                parseInt(pathname.split("/").pop()) + 1
-              }.png`}
+              src={`/images/background${templateNumber}.png`}
               className="object-cover w-full h-full rounded-2xl z-0 border-[12px] border-green-700"
             />
           </div>
@@ -591,7 +600,7 @@ function Page() {
           <div className="flex gap-x-5 justify-center items-center w-full">
             {/* <Button onClick={handleUploadToS3}>S3업로드</Button> */}
 
-            {pathname.split("/").pop() === "0" && (
+            {templateNumber === "0" && (
               <Button className="bg-green-700 text-white" onClick={onOpen}>
                 사진업로드
               </Button>
@@ -601,7 +610,7 @@ function Page() {
                 이미지삭제
               </Button>
             )}
-            {["0", "1", "2", "3"].includes(pathname.split("/").pop()) && (
+            {["0", "1", "2", "3"].includes(templateNumber) && (
               <Button
                 className="bg-green-700 text-white"
                 onClick={() => {
@@ -626,6 +635,7 @@ function Page() {
             />
           ) : (
             <SlideUp>
+              {/* !isLoading || completeImage */}
               <ul className="list-inside list-disc text-sm text-justify mb-3">
                 <li className="mb-1">
                   비방, 비하, 욕설, 성적 수치심 등 타인에게 불쾌감을 주는 문구는
@@ -636,11 +646,7 @@ function Page() {
                   않습니다.
                 </li>
               </ul>
-              {/* {isIPhone && (
-                <div className="transform rotate-180 flex justify-center items-center shakeAnimation">
-                  <TbHandClick className="text-green-700 text-3xl  " />
-                </div>
-              )} */}
+
               <img
                 src={completeImage}
                 alt="Generated Image"
@@ -648,11 +654,13 @@ function Page() {
                   isIPhone ? "shakeAnimation" : ""
                 }`}
               />
+
               {isIPhone && (
                 <p className="text-green-700 font-bold text-sm my-2">
                   ※ 아이폰의 경우 위 이미지를 길게 눌러서 다운로드 해주세요
                 </p>
               )}
+
               <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
                 {!isIPhone && completeImage && (
                   <Button
@@ -663,6 +671,7 @@ function Page() {
                     다운로드
                   </Button>
                 )}
+
                 <Button
                   className="w-2/3 text-gray-500"
                   color="default"
@@ -675,6 +684,7 @@ function Page() {
                 >
                   편집으로 돌아가기
                 </Button>
+
                 <Button
                   className="w-2/3 text-gray-500"
                   color="default"

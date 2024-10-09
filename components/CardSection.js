@@ -10,22 +10,22 @@ export default function CardSection() {
   const list = [
     {
       title: "처음처럼",
-      img: "/images/background1.png",
+      img: "/images/background0.png",
       price: "$5.50",
     },
     // {
     //   title: "새로",
-    //   img: "/images/background2.png",
+    //   img: "/images/background1.png",
     //   price: "$5.50",
     // },
     // {
     //   title: "새로살구",
-    //   img: "/images/background3.png",
+    //   img: "/images/background2.png",
     //   price: "$5.50",
     // },
     // {
     //   title: "크러시",
-    //   img: "/images/background4.png",
+    //   img: "/images/background3.png",
     //   price: "$5.50",
     // },
   ];
