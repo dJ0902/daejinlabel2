@@ -1,26 +1,26 @@
 "use client";
 import {
+  Button,
   CircularProgress,
   Input,
   Modal,
-  ModalContent,
-  ModalHeader,
   ModalBody,
+  ModalContent,
   ModalFooter,
-  Button,
+  ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
 import imageCompression from "browser-image-compression";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useRef, useEffect } from "react";
-import { IoIosArrowBack } from "react-icons/io";
+import { useEffect, useRef, useState } from "react";
 import { CgArrowsExpandLeft } from "react-icons/cg";
+import { IoIosArrowBack } from "react-icons/io";
 import { Rnd } from "react-rnd";
 import { v4 as uuidv4 } from "uuid";
 
-import ImageCropper from "@/components/ImageCropper";
-import SlideUp from "@/components/SlideUp";
-import { useBoxSize } from "@/hooks/useBoxSize";
+import ImageCropper from "../../../components/ImageCropper";
+import SlideUp from "../../../components/SlideUp";
+import { useBoxSize } from "../../../hooks/useBoxSize";
 
 function Page() {
   const [title, setTitle] = useState("");

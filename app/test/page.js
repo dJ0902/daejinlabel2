@@ -1,6 +1,4 @@
 "use client";
-import React from "react";
-import ImageOverlay from "@/app/components/ImageOverlay";
 import { Button } from "@nextui-org/react";
 function page() {
   return (
@@ -44,7 +42,7 @@ function page() {
           </div>
         </div>
       </div>
-      <Button  className="bg-green-700 text-white font-bold">꾸미러 가기</Button>
+      <Button className="bg-green-700 text-white font-bold">꾸미러 가기</Button>
     </div>
   );
 }
