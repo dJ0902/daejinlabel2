@@ -581,7 +581,7 @@ function Page() {
               alt="Background Image"
               id="background"
               src={`/images/background${templateNumber}.png`}
-              className="object-cover w-[calc(100%-12px)] rounded-2xl z-0 box-content border-[12px] border-green-700"
+              className="object-cover w-full h-full rounded-2xl z-0 border-3 border-green-700"
             />
           </div>
 
