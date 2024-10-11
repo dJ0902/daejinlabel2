@@ -458,7 +458,7 @@ function Page() {
               backgroundRef.current && (
                 <div
                   id="title"
-                  className="title-text w-full flex justify-center items-center absolute left-1/2 transform -translate-x-1/2  text-black pt-1 pl-[12px]"
+                  className="title-text w-full flex justify-center items-center absolute left-1/2 transform -translate-x-1/2  text-black pt-1"
                   style={{
                     fontFamily: "YoonDokrip",
                     fontWeight: 700,
