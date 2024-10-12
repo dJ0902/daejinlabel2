@@ -10,7 +10,7 @@
   src: url('/fonts/YoonDokrip.ttf') format('truetype');
 }
 
-@font-face {
+/* @font-face {
   font-family: 'YoonManse';
   font-style: normal;
   font-weight: 400;
@@ -26,9 +26,21 @@
 
 @font-face {
   font-family: 'YoonMingukB';
-  
+
   src: url('/fonts/YoonMingukB.ttf') format('truetype');
-} 
+}  */
+
+@font-face {
+  font-family: 'ChumChurumText';
+  font-weight: 400;
+  src: url("/fonts/ChumChurumText.woff") format('woff');
+}
+
+@font-face {
+  font-family: 'ChumChurumTitle';
+  font-weight: 400;
+  src: url("/fonts/ChumChurumTitle.woff") format('woff');
+}
 
 @font-face {
   font-family: 'SCDream';
@@ -40,7 +52,7 @@
 @font-face {
   font-family: 'SCDream';
   font-style: normal;
-  font-weight: 500; 
+  font-weight: 500;
   src: url('/fonts/SCDream2.otf') format('truetype');
 }
 

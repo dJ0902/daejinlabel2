@@ -157,8 +157,8 @@ function Page() {
         if (templateNumber === "0") {
           titleX = canvasWidth / 2;
           titleY = (canvasHeight * 4) / 13;
-          fontSize = "430px";
-          fontFamily = "YoonDokrip";
+          fontSize = "384px";
+          fontFamily = "ChumChurumTitle";
           fontWeight = "normal";
           letterSpacing = "normal";
           lineHeight = "normal";
@@ -460,9 +460,9 @@ function Page() {
                   id="title"
                   className="title-text w-full flex justify-center items-center absolute left-1/2 transform -translate-x-1/2  text-black pt-1"
                   style={{
-                    fontFamily: "YoonDokrip",
-                    fontWeight: 700,
-                    fontSize: `${(boxSize.width * 0.215).toFixed(3)}px`,
+                    fontFamily: "ChumChurumTitle",
+                    fontWeight: 400,
+                    fontSize: `${(boxSize.width * 0.2).toFixed(3)}px`,
                     top: "6%",
                   }}
                 >
