@@ -156,7 +156,8 @@ function Page() {
 
         if (templateNumber === "0") {
           titleX = canvasWidth / 2;
-          titleY = (canvasHeight * 4) / 13;
+          // titleY = (canvasHeight * 4) / 13;
+          titleY = 700;
           fontSize = "384px";
           fontFamily = "ChumChurumTitle";
           fontWeight = "normal";
@@ -463,7 +464,7 @@ function Page() {
                     fontFamily: "ChumChurumTitle",
                     fontWeight: 400,
                     fontSize: `${(boxSize.width * 0.2).toFixed(3)}px`,
-                    top: "6%",
+                    top: "11%",
                   }}
                 >
                   {title}
