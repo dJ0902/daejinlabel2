@@ -1,7 +1,67 @@
 "use client";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import { useEffect } from "react";
+
+// 로컬스토리지에 API 호출 기록을 저장하는 함수
+const saveApiCall = (endpoint) => {
+  const now = new Date().getTime();
+  const apiCalls = JSON.parse(localStorage.getItem("apiCalls")) || {};
+
+  // API 호출 엔드포인트와 호출 시간 저장
+  apiCalls[endpoint] = now;
+  localStorage.setItem("apiCalls", JSON.stringify(apiCalls));
+};
+
+// 3시간이 지났는지 확인하는 함수
+const hasThreeHoursPassed = (lastCallTime) => {
+  const now = new Date().getTime();
+  const threeHoursInMillis = 3 * 60 * 60 * 1000;
+  return now - lastCallTime > threeHoursInMillis;
+};
+
+const fetchData = async () => {
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  let apiBaseUrl;
+
+  if (host.includes("chilsunglabels.vercel.app")) {
+    //QR코드
+    apiBaseUrl = "https://chilsunglabels.vercel.app/api/count/qr-code-access";
+  } else if (host.includes("chilsunglabel-user.vercel.app")) {
+    //WEB접근
+    apiBaseUrl = "https://chilsunglabel-user.vercel.app/api/count/web-access";
+  }
+
+  //check ls
+  const apiCalls = JSON.parse(localStorage.getItem("apiCalls")) || {};
+
+  // 로컬스토리지에 저장된 이전 호출 시간 확인
+  if (apiCalls[apiBaseUrl]) {
+    const lastCallTime = apiCalls[apiBaseUrl];
+
+    // 마지막 호출이 3시간 이내이면 호출을 생략
+    if (!hasThreeHoursPassed(lastCallTime)) {
+      console.log(`API call skipped : ${apiBaseUrl}`);
+      return;
+    }
+  }
+
+  const response = await fetch(apiBaseUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {},
+  });
+
+  if (!response.ok) {
+    console.log("Count is loss.....");
+  }
+};
+
+useEffect(() => {
+  fetchData();
+}, []);
 
 const Introduction = () => {
   const router = useRouter();
@@ -52,7 +112,7 @@ const Introduction = () => {
       </div>
       <Button
         className="bg-green-700 text-white"
-        onClick={() => router.push("/postinglist")}
+        onClick={() => router.push("/posting/0")}
       >
         꾸미러 가기
       </Button>
