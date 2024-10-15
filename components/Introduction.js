@@ -57,14 +57,15 @@ const fetchData = async () => {
   if (!response.ok) {
     console.log("Count is loss.....");
   }
+  saveApiCall(apiBaseUrl);
 };
-
-useEffect(() => {
-  fetchData();
-}, []);
 
 const Introduction = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="flex flex-col justify-center items-center w-screen h-screen px-5 gap-y-5">
