@@ -113,7 +113,7 @@ const Introduction = () => {
       </div>
       <Button
         className="bg-green-700 text-white"
-        onClick={() => router.push("/posting/0")}
+        onClick={() => router.push("/postings/0")}
       >
         꾸미러 가기
       </Button>
