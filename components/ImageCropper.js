@@ -28,7 +28,6 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
 export const ImageCropper = ({
   uploadedImage,
   setUploadedImage,
-  handleConfirmClick,
   imgRef,
   setCompletedCrop,
   completedCrop,
@@ -111,6 +110,7 @@ export const ImageCropper = ({
         >
           이미지 선택
         </Button>
+
         <input
           className="hidden"
           type="file"
@@ -118,6 +118,7 @@ export const ImageCropper = ({
           onChange={onSelectFile}
         />
       </div>
+
       <div className="flex justify-center items-center w-full h-auto">
         {!!uploadedImage ? (
           <ReactCrop
