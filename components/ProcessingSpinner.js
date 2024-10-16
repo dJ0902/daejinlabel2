@@ -23,16 +23,14 @@ export const ProcessingSpinner = ({ progress, setProgress }) => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
-      <div className="flex flex-col justify-center items-center w-full h-full gap-y-5">
-        <CircularProgress
-          aria-label="Loading..."
-          size="lg"
-          value={progress}
-          showValueLabel={true}
-          color="success"
-        />
-      </div>
+    <div className="flex justify-center items-center w-full h-full absolute z-20 bg-[#F9FAFB]">
+      <CircularProgress
+        aria-label="Loading..."
+        size="lg"
+        value={progress}
+        showValueLabel={true}
+        color="success"
+      />
     </div>
   );
 };

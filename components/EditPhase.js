@@ -10,6 +10,7 @@ import {
   EditPhaseImageUploadModal,
   EditPhaseTitle,
   EditPhaseUploadedImage,
+  ProcessingSpinner,
 } from "@/components";
 import { useBoxSize } from "@/hooks";
 
@@ -18,8 +19,6 @@ export const EditPhase = ({
   title,
   uploadedImage,
   setCompleteImage,
-  setPhase,
-  setProcessingProgress,
   setRndState,
   setTitle,
   setUploadedImage,
@@ -77,6 +76,8 @@ export const EditPhase = ({
   // 편집 화면 관련
   const { ref: backgroundRef, boxSize } = useBoxSize();
   const uploadedImgRef = useRef(null);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [showProgressSpinner, setShowProgressSpinner] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -103,7 +104,7 @@ export const EditPhase = ({
   };
 
   const handleSaveImage = () => {
-    setPhase("Processing");
+    setShowProgressSpinner(true);
     setProcessingProgress(0);
 
     console.log("handleSaveImage start:", new Date());
@@ -245,8 +246,6 @@ export const EditPhase = ({
         canvas.toBlob(async (blob) => {
           if (blob) {
             const compressedBlob = await compressImage(blob);
-            // setIsComplete(true);
-            // setProgressValue(0);
             handleUploadToS3(compressedBlob);
           }
         }, "image/png");
@@ -322,123 +321,135 @@ export const EditPhase = ({
         setCompleteImage(s3_url);
       };
       setProcessingProgress(100);
-      setPhase("Completed");
     } catch (error) {
       console.error("Error uploading image:", error);
+      alert("이미지 생성 중 오류가 발생했습니다.");
       setProcessingProgress(100);
-      setPhase("Edit");
+      setShowProgressSpinner(false);
     }
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
-      <div onClick={redirectToHome} className="absolute top-5 left-5">
-        <IoIosArrowBack className="text-3xl cursor-pointer" />
-      </div>
+    <>
+      <div className="flex flex-col justify-center items-center w-full md:w-1/3 h-full gap-y-5">
+        <div onClick={redirectToHome} className="absolute top-5 left-5">
+          <IoIosArrowBack className="text-3xl cursor-pointer" />
+        </div>
 
-      <ul className="list-inside list-disc text-sm text-justify">
-        <li>
-          비방, 비하, 욕설, 성적 수치심 등 타인에게 불쾌감을 주는 문구는
-          금지합니다.
-        </li>
-        <li>
-          해당 이미지는 특정 단체나 기관, 개인의 의견을 대표하지 않습니다.
-        </li>
-      </ul>
+        <ul className="list-inside list-disc text-sm text-justify">
+          <li>
+            비방, 비하, 욕설, 성적 수치심 등 타인에게 불쾌감을 주는 문구는
+            금지합니다.
+          </li>
+          <li>
+            해당 이미지는 특정 단체나 기관, 개인의 의견을 대표하지 않습니다.
+          </li>
+        </ul>
 
-      <div
-        id="picture"
-        className="relative w-full aspect-[1920/1873]"
-        ref={backgroundRef}
-      >
-        {uploadedImage && (
-          <div
-            style={{
-              position: "absolute",
-              left: rndState.x,
-              top: rndState.y,
-              width: `${rndState.width}px`,
-              height: `${rndState.height}px`,
-              opacity: rndState.isDraggingOrResizing ? 0 : 1,
-            }}
-          >
-            <img
-              src={uploadedImage}
-              alt="Draggable Resizable"
-              className="w-full h-full"
+        <div
+          id="picture"
+          className="relative w-full aspect-[1920/1873]"
+          ref={backgroundRef}
+        >
+          {uploadedImage && (
+            <div
+              style={{
+                position: "absolute",
+                left: rndState.x,
+                top: rndState.y,
+                width: `${rndState.width}px`,
+                height: `${rndState.height}px`,
+                opacity: rndState.isDraggingOrResizing ? 0 : 1,
+              }}
+            >
+              <img
+                src={uploadedImage}
+                alt="Draggable Resizable"
+                className="w-full h-full"
+              />
+            </div>
+          )}
+
+          {backgroundRef && backgroundRef.current && (
+            <EditPhaseTitle
+              boxSize={boxSize}
+              title={title}
+              templateNumber={templateNumber}
             />
-          </div>
-        )}
+          )}
 
-        {backgroundRef && backgroundRef.current && (
-          <EditPhaseTitle
-            boxSize={boxSize}
-            title={title}
-            templateNumber={templateNumber}
+          <img
+            alt="Background Image"
+            id="background"
+            src={`/images/background${templateNumber}.png`}
+            className="object-cover w-full h-full rounded-2xl border  border-gray-300 absolute"
           />
-        )}
 
-        <img
-          alt="Background Image"
-          id="background"
-          src={`/images/background${templateNumber}.png`}
-          className="object-cover w-full h-full rounded-2xl border  border-gray-300 absolute"
+          {uploadedImage && (
+            <EditPhaseUploadedImage
+              rndState={rndState}
+              uploadedImgRef={uploadedImgRef}
+              uploadedImage={uploadedImage}
+              setRndState={setRndState}
+            />
+          )}
+        </div>
+
+        <Input
+          value={title.length > 5 ? title.substring(0, 5) : title}
+          onChange={(e) =>
+            setTitle(
+              e.target.value.length > 5
+                ? e.target.value.substring(0, 5)
+                : e.target.value
+            )
+          }
+          type="text"
+          label="상단 출력 문구"
         />
 
-        {uploadedImage && (
-          <EditPhaseUploadedImage
-            rndState={rndState}
-            uploadedImgRef={uploadedImgRef}
-            uploadedImage={uploadedImage}
-            setRndState={setRndState}
-          />
-        )}
+        <div className="flex gap-x-5 justify-center items-center w-full">
+          {templateNumber === "0" && (
+            <Button className="bg-green-700 text-white" onClick={onModalOpen}>
+              사진업로드
+            </Button>
+          )}
+
+          {uploadedImage && (
+            <Button color="danger" onClick={() => setUploadedImage(null)}>
+              이미지삭제
+            </Button>
+          )}
+
+          {templateNumber === "0" && (
+            <Button
+              className="bg-green-700 text-white"
+              onClick={handleSaveImage}
+            >
+              저장하기
+            </Button>
+          )}
+        </div>
+
+        <EditPhaseImageUploadModal
+          isOpen={isModalOpen}
+          imgRef={uploadModalImgRef}
+          uploadedImage={uploadedImage}
+          completedCrop={completedCrop}
+          handleConfirmClick={handleConfirmCropImageButton}
+          onClose={onModalClose}
+          onOpenChange={onModalOpenChange}
+          setCompletedCrop={setCompletedCrop}
+          setUploadedImage={setUploadedImage}
+        />
       </div>
 
-      <Input
-        value={title.length > 5 ? title.substring(0, 5) : title}
-        onChange={(e) =>
-          setTitle(
-            e.target.value.length > 5
-              ? e.target.value.substring(0, 5)
-              : e.target.value
-          )
-        }
-        type="text"
-        label="상단 출력 문구"
-      />
-
-      <div className="flex gap-x-5 justify-center items-center w-full">
-        {templateNumber === "0" && (
-          <Button className="bg-green-700 text-white" onClick={onModalOpen}>
-            사진업로드
-          </Button>
-        )}
-
-        {uploadedImage && (
-          <Button color="danger" onClick={() => setUploadedImage(null)}>
-            이미지삭제
-          </Button>
-        )}
-
-        {templateNumber === "0" && (
-          <Button className="bg-green-700 text-white" onClick={handleSaveImage}>
-            저장하기
-          </Button>
-        )}
-      </div>
-
-      <EditPhaseImageUploadModal
-        isOpen={isModalOpen}
-        imgRef={uploadModalImgRef}
-        uploadedImage={uploadedImage}
-        completedCrop={completedCrop}
-        handleConfirmClick={handleConfirmCropImageButton}
-        onClose={onModalClose}
-        onOpenChange={onModalOpenChange}
-        setCompletedCrop={setCompletedCrop}
-        setUploadedImage={setUploadedImage}
-      />
-    </div>
+      {showProgressSpinner && (
+        <ProcessingSpinner
+          progress={processingProgress}
+          setProgress={setProcessingProgress}
+        />
+      )}
+    </>
   );
 };

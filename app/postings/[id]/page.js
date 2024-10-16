@@ -1,13 +1,10 @@
 "use client";
 import { useState } from "react";
 
-import { CompletePhase, EditPhase, ProcessingSpinner } from "@/components";
+import { CompletePhase, EditPhase } from "@/components";
 import { isIPhone } from "@/utils";
 
 function Page() {
-  // 진행 단계: 편집(Edit) -> 프로세싱(Processing) -> 완료(Completed)
-  const [phase, setPhase] = useState("Edit");
-
   // 편집
   const [title, setTitle] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -19,14 +16,10 @@ function Page() {
     height: 200,
   }); // 사용자 업로드 이미지 드래그앤드롭 관련 상태
 
-  // 이미지 프로세싱 진행도(퍼센트)
-  const [processingProgress, setProcessingProgress] = useState(0);
-
   // 완성된 이미지
   const [completeImage, setCompleteImage] = useState(null);
 
   const handleBackToEdit = () => {
-    setPhase("Edit");
     setTitle("");
     setUploadedImage(null);
     setCompleteImage(null);
@@ -66,30 +59,19 @@ function Page() {
     }
   };
 
-  if (phase === "Edit") {
+  if (!completeImage) {
     return (
       <EditPhase
         rndState={rndState}
         title={title}
         uploadedImage={uploadedImage}
         setCompleteImage={setCompleteImage}
-        setPhase={setPhase}
-        setProcessingProgress={setProcessingProgress}
         setRndState={setRndState}
         setTitle={setTitle}
         setUploadedImage={setUploadedImage}
       />
     );
   }
-  if (phase === "Processing" || !completeImage) {
-    return (
-      <ProcessingSpinner
-        progress={processingProgress}
-        setProgress={setProcessingProgress}
-      />
-    );
-  }
-  // phase === 'Completed'
   return (
     <CompletePhase
       completeImage={completeImage}
