@@ -80,10 +80,7 @@ const IntroductionPage = () => {
 
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-4 space-x-2">
-            <img
-              src="https://labelimages.s3.ap-northeast-2.amazonaws.com/title.png"
-              alt=""
-            />
+            <img src="/images/title.png" alt="제목" />
           </div>
 
           <div className="space-y-4 border-4 border-white p-4 rounded-lg bg-green-700 bg-opacity-80">
