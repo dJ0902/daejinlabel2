@@ -1,10 +1,8 @@
 "use client";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
-import imageCompression from "browser-image-compression";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import { v4 as uuidv4 } from "uuid";
 
 import {
   EditPhaseImageUploadModal,
@@ -87,27 +85,10 @@ export const EditPhase = ({
     router.push("/");
   };
 
-  const compressImage = async (blob) => {
-    const options = {
-      maxSizeMB: 10,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    };
-
-    try {
-      const compressedBlob = await imageCompression(blob, options);
-      return compressedBlob;
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      return blob; // 압축에 실패하면 원본 blob 반환
-    }
-  };
-
   const handleSaveImage = () => {
     setShowProgressSpinner(true);
     setProcessingProgress(0);
 
-    console.log("handleSaveImage start:", new Date());
     if (backgroundRef.current) {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
@@ -243,89 +224,15 @@ export const EditPhase = ({
           ctx.fillText(title, titleX, titleY);
         }
 
-        canvas.toBlob(async (blob) => {
-          if (blob) {
-            const compressedBlob = await compressImage(blob);
-            handleUploadToS3(compressedBlob);
-          }
-        }, "image/png");
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const dataURL = canvas.toDataURL();
+        setProcessingProgress(100);
+        setShowProgressSpinner(false);
+        setCompleteImage(dataURL);
       }
-    }
-  };
-
-  const handleUploadToS3 = async (blob) => {
-    try {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = async () => {
-        const base64Data = reader.result.split(",")[1];
-
-        const chunkSize = 500000; // 약 500KB
-        const totalChunks = Math.ceil(base64Data.length / chunkSize);
-        const requestId = uuidv4(); // Generate a unique requestId
-
-        for (let i = 0; i < totalChunks; i++) {
-          let chunk = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
-
-          // Base64 패딩 추가 (필요한 경우)
-          while (chunk.length % 4 !== 0) {
-            chunk += "=";
-          }
-
-          console.log("/process-image-chunk start:", new Date());
-          const response = await fetch(
-            "https://5ih5aln40m.execute-api.ap-northeast-2.amazonaws.com/process-image-chunk",
-            // "http://localhost:8000/process-image-chunk",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                image: chunk,
-                chunkIndex: i,
-                totalChunks: totalChunks,
-                requestId: requestId,
-              }),
-            }
-          );
-          console.log("/process-image-chunk end:", new Date());
-
-          if (!response.ok) {
-            throw new Error(`Failed to process image chunk ${i + 1}`);
-          }
-        }
-
-        console.log("/complete-image-upload start:", new Date());
-
-        // 모든 청크 업로드 완료 후 처리
-        const finalResponse = await fetch(
-          "https://5ih5aln40m.execute-api.ap-northeast-2.amazonaws.com//complete-image-upload",
-          // "http://localhost:8000/complete-image-upload",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              totalChunks: totalChunks,
-              requestId: requestId,
-            }),
-          }
-        );
-        console.log("/complete-image-upload end:", new Date());
-
-        const result = await finalResponse.json();
-        const s3_url = result.s3_url;
-
-        setCompleteImage(s3_url);
-      };
-      setProcessingProgress(100);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      alert("이미지 생성 중 오류가 발생했습니다.");
-      setProcessingProgress(100);
-      setShowProgressSpinner(false);
     }
   };
 
