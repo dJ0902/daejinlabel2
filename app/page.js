@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 // 로컬스토리지에 API 호출 기록을 저장하는 함수
 const saveApiCall = (endpoint) => {
@@ -32,19 +32,19 @@ const fetchData = async () => {
     apiBaseUrl = "https://chilsunglabel-user.vercel.app/api/count/web-access";
   }
 
-  //check ls
-  const apiCalls = JSON.parse(localStorage.getItem("apiCalls")) || {};
+  // //check ls
+  // const apiCalls = JSON.parse(localStorage.getItem("apiCalls")) || {};
 
-  // 로컬스토리지에 저장된 이전 호출 시간 확인
-  if (apiCalls[apiBaseUrl]) {
-    const lastCallTime = apiCalls[apiBaseUrl];
+  // // 로컬스토리지에 저장된 이전 호출 시간 확인
+  // if (apiCalls[apiBaseUrl]) {
+  //   const lastCallTime = apiCalls[apiBaseUrl];
 
-    // 마지막 호출이 3시간 이내이면 호출을 생략
-    if (!hasThreeHoursPassed(lastCallTime)) {
-      console.log(`API call skipped : ${apiBaseUrl}`);
-      return;
-    }
-  }
+  //   // 마지막 호출이 3시간 이내이면 호출을 생략
+  //   if (!hasThreeHoursPassed(lastCallTime)) {
+  //     console.log(`API call skipped : ${apiBaseUrl}`);
+  //     return;
+  //   }
+  // }
 
   const response = await fetch(apiBaseUrl, {
     method: "POST",
@@ -57,7 +57,7 @@ const fetchData = async () => {
   if (!response.ok) {
     console.log("Count is loss.....");
   }
-  saveApiCall(apiBaseUrl);
+  // saveApiCall(apiBaseUrl);
 };
 
 const IntroductionPage = () => {
