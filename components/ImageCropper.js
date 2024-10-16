@@ -4,8 +4,8 @@ import React, { useState, useRef } from "react";
 import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-import { useDebounceEffect } from "@/hooks/useDebounceEffect";
-import { canvasPreview } from "./canvasPreview";
+import { useDebounceEffect } from "@/hooks";
+import { previewCanvas } from "@/utils";
 
 // This is to demonstate how to make and center a % aspect crop
 // which is a bit trickier so we use some helper functions.
@@ -25,14 +25,14 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
   );
 }
 
-export default function ImageCropper({
+export const ImageCropper = ({
   uploadedImage,
   setUploadedImage,
   handleConfirmClick,
   imgRef,
   setCompletedCrop,
   completedCrop,
-}) {
+}) => {
   const previewCanvasRef = useRef(null);
   const [crop, setCrop] = useState();
   const [scale, setScale] = useState(1);
@@ -88,7 +88,7 @@ export default function ImageCropper({
         imgRef.current &&
         previewCanvasRef.current
       ) {
-        canvasPreview(
+        previewCanvas(
           imgRef.current,
           previewCanvasRef.current,
           completedCrop,
@@ -141,4 +141,4 @@ export default function ImageCropper({
       </div>
     </div>
   );
-}
+};

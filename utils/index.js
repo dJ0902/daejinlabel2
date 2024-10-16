@@ -1,6 +1,6 @@
 const TO_RADIANS = Math.PI / 180;
 
-export async function canvasPreview(
+export async function previewCanvas(
   image,
   canvas,
   crop,

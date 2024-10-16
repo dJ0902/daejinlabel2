@@ -18,9 +18,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import { Rnd } from "react-rnd";
 import { v4 as uuidv4 } from "uuid";
 
-import ImageCropper from "../../../components/ImageCropper";
-import SlideUp from "../../../components/SlideUp";
-import { useBoxSize } from "../../../hooks/useBoxSize";
+import { ImageCropper, SlideUp } from "@/components";
+import { useBoxSize } from "@/hooks";
 
 function Page() {
   const [title, setTitle] = useState("");

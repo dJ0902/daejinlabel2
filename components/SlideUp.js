@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import React from "react";
 
-const SlideUp = ({ children, id = 1 }) => {
+export const SlideUp = ({ children, id = 1 }) => {
   const slideLeftVariants = {
     offscreen: {
       y: 80,
@@ -30,5 +30,3 @@ const SlideUp = ({ children, id = 1 }) => {
     </motion.div>
   );
 };
-
-export default SlideUp;
