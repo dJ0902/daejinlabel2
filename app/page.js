@@ -70,14 +70,6 @@ const IntroductionPage = () => {
   return (
     <div className="flex flex-col justify-center items-center w-screen h-screen px-5 gap-y-5">
       <div className=" bg-green-700 p-6 rounded-lg max-w-md overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{
-            backgroundImage: "url('/placeholder.svg?height=400&width=400')",
-            filter: "blur(2px)",
-          }}
-        ></div>
-
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-4 space-x-2">
             <img src="/images/title.png" alt="제목" />
