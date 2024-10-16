@@ -21,6 +21,32 @@ import { v4 as uuidv4 } from "uuid";
 import { ImageCropper, SlideUp } from "@/components";
 import { useBoxSize } from "@/hooks";
 
+const fetchData = async () => {
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  let apiBaseUrl;
+
+  if (host.includes("chilsunglabels.vercel.app")) {
+    //QR코드
+    apiBaseUrl = "https://chilsunglabels.vercel.app/api/count/content-download";
+  } else if (host.includes("chilsunglabel-user.vercel.app")) {
+    //WEB접근
+    apiBaseUrl =
+      "https://chilsunglabel-user.vercel.app/api/count/content-download";
+  }
+
+  const response = await fetch(apiBaseUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {},
+  });
+
+  if (!response.ok) {
+    console.log("Count is loss.....");
+  }
+};
+
 function Page() {
   const [title, setTitle] = useState("");
   const [completedCrop, setCompletedCrop] = useState();
@@ -288,6 +314,7 @@ function Page() {
       if (isIPhone) {
         // 모바일 기기일 경우 새 탭에서 이미지 열기
         window.open(completeImage, "_blank");
+        fetchData();
       } else {
         // 데스크톱일 경우 기존 다운로드 로직 유지
         const link = document.createElement("a");
@@ -309,6 +336,7 @@ function Page() {
           );
         link.download = `label_image_${currentTime}.png`;
         link.click();
+        fetchData();
       }
     } else {
       console.log("No image available to download");
