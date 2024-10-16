@@ -84,9 +84,6 @@ const IntroductionPage = () => {
               src="https://labelimages.s3.ap-northeast-2.amazonaws.com/title.png"
               alt=""
             />
-            {/* <h2 className="text-2xl font-extrabold text-white">
-              🏷️MY 라벨 만들기 사용법
-            </h2> */}
           </div>
 
           <div className="space-y-4 border-4 border-white p-4 rounded-lg bg-green-700 bg-opacity-80">
@@ -100,11 +97,11 @@ const IntroductionPage = () => {
                 key={index}
                 className="bg-green-600 p-3 rounded flex items-center space-x-3 justify-start"
               >
-                <div className="bg-white text-green-700 font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+                <div className="bg-white text-green-700 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-['ChumChurumTitle'] pb-[0.1rem]">
                   {index + 1}
                 </div>
                 <div>
-                  <p className="text-white font-bold text-small">{step}</p>
+                  <p className="text-white text-small">{step}</p>
                 </div>
               </div>
             ))}
@@ -112,7 +109,7 @@ const IntroductionPage = () => {
         </div>
       </div>
       <Button
-        className="bg-green-700 text-white"
+        className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
         onClick={() => router.push("/postings/0")}
       >
         꾸미러 가기

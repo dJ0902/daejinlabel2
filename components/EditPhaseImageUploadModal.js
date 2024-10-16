@@ -38,12 +38,17 @@ export const EditPhaseImageUploadModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button color="danger" variant="light" onPress={() => {}}>
+          <Button
+            className="font-['ChumChurumTitle'] pb-[0.1rem]"
+            color="danger"
+            variant="light"
+            onPress={() => {}}
+          >
             취소
           </Button>
 
           <Button
-            className="bg-green-700 text-white"
+            className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
             onPress={() => {
               handleConfirmClick();
               onClose();

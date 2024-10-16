@@ -1,9 +1,6 @@
-import { Inter } from "next/font/google";
 import { NextUIProvider } from "@nextui-org/react";
 
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "처음처럼",
@@ -18,7 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <NextUIProvider>
           <div
             class="flex flex-col bg-[#F9FAFB] justify-around items-center w-screen h-screen px-10"

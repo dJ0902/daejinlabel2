@@ -410,20 +410,27 @@ export const EditPhase = ({
 
         <div className="flex gap-x-5 justify-center items-center w-full">
           {templateNumber === "0" && (
-            <Button className="bg-green-700 text-white" onClick={onModalOpen}>
+            <Button
+              className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
+              onClick={onModalOpen}
+            >
               사진업로드
             </Button>
           )}
 
           {uploadedImage && (
-            <Button color="danger" onClick={() => setUploadedImage(null)}>
+            <Button
+              className="font-['ChumChurumTitle'] pb-[0.1rem]"
+              color="danger"
+              onClick={() => setUploadedImage(null)}
+            >
               이미지삭제
             </Button>
           )}
 
           {templateNumber === "0" && (
             <Button
-              className="bg-green-700 text-white"
+              className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
               onClick={handleSaveImage}
             >
               저장하기
