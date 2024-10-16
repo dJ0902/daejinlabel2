@@ -1,5 +1,7 @@
 const TO_RADIANS = Math.PI / 180;
 
+export const isIPhone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 export async function previewCanvas(
   image,
   canvas,
