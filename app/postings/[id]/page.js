@@ -272,9 +272,8 @@ function Page() {
     }
   }, [isLoading]);
 
-  const handleArrowBack = () => {
-    router.push("/postinglist");
-    setCompleteImage("");
+  const redirectToHome = () => {
+    router.push("/");
   };
 
   const handleBackToEdit = () => {
@@ -435,7 +434,7 @@ function Page() {
             </ModalContent>
           </Modal>
 
-          <div onClick={handleArrowBack} className="absolute top-5 left-5">
+          <div onClick={redirectToHome} className="absolute top-5 left-5">
             <IoIosArrowBack className="text-3xl cursor-pointer" />
           </div>
 
@@ -692,7 +691,7 @@ function Page() {
                   variant="bordered"
                   onClick={() => {
                     setIsLoading(true);
-                    handleArrowBack();
+                    redirectToHome();
                     setCompleteImage("");
                   }}
                 >
