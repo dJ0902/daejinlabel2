@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 
-@font-face {
+/* @font-face {
   font-family: 'YoonDokrip';
   font-style: normal;
   font-weight: 700;
   src: url('/fonts/YoonDokrip.ttf') format('truetype');
-}
+} */
 
 /* @font-face {
   font-family: 'YoonManse';
@@ -42,7 +42,7 @@
   src: url("/fonts/ChumChurumTitle.woff") format('woff');
 }
 
-@font-face {
+/* @font-face {
   font-family: 'SCDream';
   font-style: normal;
   font-weight: 400;
@@ -82,7 +82,7 @@
   font-style: normal;
   font-weight: 900;
   src: url('/fonts/SCDream6.otf') format('truetype');
-}
+} */
 
 @keyframes shake {
   0% { transform: scale(1); }
@@ -100,4 +100,8 @@
 
 .shakeAnimation {
   animation: shake 5s ease-in-out infinite;
+}
+
+body {
+  font-family: 'ChumChurumText';
 }

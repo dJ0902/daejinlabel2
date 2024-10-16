@@ -105,7 +105,7 @@ export const ImageCropper = ({
       <div className="Crop-Controls flex flex-col justify-center items-center gap-y-5">
         <Button
           isLoading={isLoading}
-          className="bg-green-700 text-white"
+          className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
           onClick={() => document.querySelector('input[type="file"]').click()}
         >
           이미지 선택

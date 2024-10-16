@@ -59,14 +59,13 @@ export default function ListPage() {
                     shadow="sm"
                     radius="lg"
                     alt={item.title}
-                    // className="w-full h-[20vh] object-fill rounded-2xl shadow-md"
                     className="w-full object-fill rounded-2xl shadow-md"
                     src={item.img}
                   />
                 </div>
               </CardBody>
               <CardFooter className="text-small justify-between ">
-                <p className="text-center w-full font-bold text-black">
+                <p className="text-center w-full font-['ChumChurumTitle'] pb-[0.1rem] text-black">
                   {item.title}
                 </p>
               </CardFooter>
