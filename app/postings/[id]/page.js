@@ -12,12 +12,12 @@ function Page() {
   const [title, setTitle] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [rndState, setRndState] = useState({
+    isDraggingOrResizing: false,
     x: 100,
     y: 100,
     width: 200,
     height: 200,
   }); // 사용자 업로드 이미지 드래그앤드롭 관련 상태
-  console.log(rndState);
 
   // 이미지 프로세싱 진행도(퍼센트)
   const [processingProgress, setProcessingProgress] = useState(0);

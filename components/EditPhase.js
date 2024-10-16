@@ -346,7 +346,30 @@ export const EditPhase = ({
         </li>
       </ul>
 
-      <div id="picture" className="relative w-full h-auto" ref={backgroundRef}>
+      <div
+        id="picture"
+        className="relative w-full aspect-[1920/1873]"
+        ref={backgroundRef}
+      >
+        {uploadedImage && (
+          <div
+            style={{
+              position: "absolute",
+              left: rndState.x,
+              top: rndState.y,
+              width: `${rndState.width}px`,
+              height: `${rndState.height}px`,
+              opacity: rndState.isDraggingOrResizing ? 0 : 1,
+            }}
+          >
+            <img
+              src={uploadedImage}
+              alt="Draggable Resizable"
+              className="w-full h-full"
+            />
+          </div>
+        )}
+
         {backgroundRef && backgroundRef.current && (
           <EditPhaseTitle
             boxSize={boxSize}
@@ -354,6 +377,13 @@ export const EditPhase = ({
             templateNumber={templateNumber}
           />
         )}
+
+        <img
+          alt="Background Image"
+          id="background"
+          src={`/images/background${templateNumber}.png`}
+          className="object-cover w-full h-full rounded-2xl border  border-gray-300 absolute"
+        />
 
         {uploadedImage && (
           <EditPhaseUploadedImage
@@ -363,13 +393,6 @@ export const EditPhase = ({
             setRndState={setRndState}
           />
         )}
-
-        <img
-          alt="Background Image"
-          id="background"
-          src={`/images/background${templateNumber}.png`}
-          className="object-cover w-full h-full rounded-2xl z-0 border border-gray-300"
-        />
       </div>
 
       <Input
