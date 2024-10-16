@@ -42,7 +42,10 @@ export const EditPhaseImageUploadModal = ({
             className="font-['ChumChurumTitle'] pb-[0.1rem]"
             color="danger"
             variant="light"
-            onPress={() => {}}
+            onPress={() => {
+              setUploadedImage(null);
+              onClose();
+            }}
           >
             취소
           </Button>
