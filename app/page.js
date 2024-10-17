@@ -69,13 +69,13 @@ const IntroductionPage = () => {
 
   return (
     <div className="flex flex-col justify-center items-center w-screen h-screen px-5 gap-y-5">
-      <div className=" bg-green-700 p-6 rounded-lg max-w-md overflow-hidden">
+      <div className=" bg-panton-500 p-6 rounded-lg max-w-md overflow-hidden">
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-4 space-x-2">
-            <img src="/images/title.png" alt="제목" />
+            <img src="/images/title.jpg" alt="제목" />
           </div>
 
-          <div className="space-y-4 border-4 border-white p-4 rounded-lg bg-green-700 bg-opacity-80">
+          <div className="space-y-4 border-4 border-white p-4 rounded-lg bg-panton-500 bg-opacity-80">
             {[
               "상단에 QR코드를 스캔해주세요.",
               "접속 후 화면을 한번 터치해주세요.",
@@ -84,9 +84,9 @@ const IntroductionPage = () => {
             ].map((step, index) => (
               <div
                 key={index}
-                className="bg-green-600 p-3 rounded flex items-center space-x-3 justify-start"
+                className="bg-panton-354 p-3 rounded flex items-center space-x-3 justify-start"
               >
-                <div className="bg-white text-green-700 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-['ChumChurumTitle'] pb-[0.1rem]">
+                <div className="bg-white text-panton-500 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 font-['ChumChurumTitle'] pb-[0.1rem]">
                   {index + 1}
                 </div>
                 <div>
@@ -98,7 +98,7 @@ const IntroductionPage = () => {
         </div>
       </div>
       <Button
-        className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
+        className="bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
         onClick={() => router.push("/postings/0")}
       >
         꾸미러 가기

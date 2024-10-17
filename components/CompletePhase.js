@@ -35,7 +35,7 @@ export const CompletePhase = ({
               className="max-w-full max-h-full object-contain shakeAnimation"
             />
 
-            <p className="text-green-700 font-['ChumChurumTitle'] pb-[0.1rem] text-sm my-2">
+            <p className="text-panton-500 font-['ChumChurumTitle'] pb-[0.1rem] text-sm my-2">
               ※ 아이폰의 경우 위 이미지를 길게 눌러서 다운로드 해주세요
             </p>
 
@@ -88,7 +88,7 @@ export const CompletePhase = ({
 
           <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
             <Button
-              className="w-2/3 animate-pulse bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
+              className="w-2/3 animate-pulse bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
               color="primary"
               onClick={handleDownloadImage}
             >

@@ -50,6 +50,7 @@ export const ImageCropper = ({
       try {
         const response = await fetch(
           "https://vn3xcq2ahg.execute-api.ap-northeast-2.amazonaws.com/remove-background/",
+          // "http://127.0.0.1:8000/remove-background",
           {
             method: "POST",
             body: formData,
@@ -105,7 +106,7 @@ export const ImageCropper = ({
       <div className="Crop-Controls flex flex-col justify-center items-center gap-y-5">
         <Button
           isLoading={isLoading}
-          className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
+          className="bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
           onClick={() => document.querySelector('input[type="file"]').click()}
         >
           이미지 선택

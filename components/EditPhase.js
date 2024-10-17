@@ -318,7 +318,7 @@ export const EditPhase = ({
         <div className="flex gap-x-5 justify-center items-center w-full">
           {templateNumber === "0" && (
             <Button
-              className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
+              className="bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
               onClick={onModalOpen}
             >
               사진업로드
@@ -337,7 +337,7 @@ export const EditPhase = ({
 
           {templateNumber === "0" && (
             <Button
-              className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
+              className="bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
               onClick={handleSaveImage}
             >
               저장하기

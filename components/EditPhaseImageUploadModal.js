@@ -51,7 +51,7 @@ export const EditPhaseImageUploadModal = ({
           </Button>
 
           <Button
-            className="bg-green-700 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
+            className="bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
             onPress={() => {
               handleConfirmClick();
               onClose();
