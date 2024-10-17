@@ -46,7 +46,7 @@ export const CompletePhase = ({
                 variant="bordered"
                 onClick={handleBackToEdit}
               >
-                편집으로 돌아가기
+                다시 꾸미러 가기
               </Button>
 
               <Button
@@ -57,7 +57,7 @@ export const CompletePhase = ({
                   router.push("/");
                 }}
               >
-                첫 화면으로 돌아가기
+                사용법 보러가기
               </Button>
             </div>
           </SlideUp>
@@ -101,7 +101,7 @@ export const CompletePhase = ({
               variant="bordered"
               onClick={handleBackToEdit}
             >
-              편집으로 돌아가기
+              다시 꾸미러 가기
             </Button>
 
             <Button
@@ -112,7 +112,7 @@ export const CompletePhase = ({
                 router.push("/");
               }}
             >
-              첫 화면으로 돌아가기
+              사용법 보러가기
             </Button>
           </div>
         </SlideUp>
