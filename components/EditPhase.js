@@ -315,6 +315,26 @@ export const EditPhase = ({
           label="상단 출력 문구"
         />
 
+        {/*
+          경고 문구
+        <Input
+          value={title.length > 5 ? title.substring(0, 5) : title}
+          onChange={(e) =>
+            setTitle(
+              e.target.value.length > 5
+                ? e.target.value.substring(0, 5)
+                : e.target.value
+            )
+          }
+          color="danger"
+          type="text"
+          label="상단 출력 문구"
+        />
+
+        <p className="text-sm text-[#f31261] text-center">
+          타인에게 불쾌감을 주는 문구는 입력할 수 없습니다.
+        </p> */}
+
         <div className="flex gap-x-5 justify-center items-center w-full">
           {templateNumber === "0" && (
             <Button
