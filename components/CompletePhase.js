@@ -32,7 +32,7 @@ export const CompletePhase = ({
             <img
               src={completeImage}
               alt="Generated Image"
-              className="max-w-full max-h-full object-contain shakeAnimation"
+              className="max-w-full max-h-full object-contain rounded-2xl shakeAnimation"
             />
 
             <p className="text-panton-500 font-['ChumChurumTitle'] pb-[0.1rem] text-sm my-2">
@@ -41,7 +41,7 @@ export const CompletePhase = ({
 
             <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
               <Button
-                className="w-2/3 text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
+                className="w-2/3 bg-white border-white text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
                 color="default"
                 variant="bordered"
                 onClick={handleBackToEdit}
@@ -50,7 +50,7 @@ export const CompletePhase = ({
               </Button>
 
               <Button
-                className="w-2/3 text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
+                className="w-2/3 bg-white border-white text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
                 color="default"
                 variant="bordered"
                 onClick={() => {
@@ -83,7 +83,7 @@ export const CompletePhase = ({
           <img
             src={completeImage}
             alt="Generated Image"
-            className="max-w-full max-h-full object-contain"
+            className="max-w-full max-h-full object-contain rounded-2xl"
           />
 
           <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
@@ -96,7 +96,7 @@ export const CompletePhase = ({
             </Button>
 
             <Button
-              className="w-2/3 text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
+              className="w-2/3 bg-white border-white text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
               color="default"
               variant="bordered"
               onClick={handleBackToEdit}
@@ -105,7 +105,7 @@ export const CompletePhase = ({
             </Button>
 
             <Button
-              className="w-2/3 text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
+              className="w-2/3 bg-white border-white text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
               color="default"
               variant="bordered"
               onClick={() => {

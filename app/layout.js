@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       <body>
         <NextUIProvider>
           <div
-            class="flex flex-col bg-[#F9FAFB] justify-around items-center w-screen h-screen px-10"
+            class="flex flex-col bg-[url('/images/container.png')] bg-cover bg-center bg-no-repeat justify-around items-center w-screen h-screen px-10"
             id="js-oversized"
           >
             {children}

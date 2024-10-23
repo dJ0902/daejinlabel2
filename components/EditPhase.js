@@ -11,7 +11,6 @@ import {
   ProcessingSpinner,
 } from "@/components";
 import { useBoxSize } from "@/hooks";
-import { hasBadWords } from "@/utils";
 
 export const EditPhase = ({
   rndState,
@@ -24,7 +23,6 @@ export const EditPhase = ({
 }) => {
   // 사용자 이미지 업로드 모달 관련
   const [completedCrop, setCompletedCrop] = useState();
-  const [isContainProfanity, setIsContainProfanity] = useState(false);
   const {
     isOpen: isModalOpen,
     onClose: onModalClose,
@@ -257,7 +255,7 @@ export const EditPhase = ({
 
         <div
           id="picture"
-          className="relative w-full aspect-[1920/1873]"
+          className="relative w-full aspect-[1920/1873] bg-white rounded-2xl"
           ref={backgroundRef}
         >
           {uploadedImage && (
@@ -306,31 +304,36 @@ export const EditPhase = ({
 
         <Input
           value={title.length > 5 ? title.substring(0, 5) : title}
-          onChange={async (e) => {
+          onChange={(e) =>
             setTitle(
               e.target.value.length > 5
                 ? e.target.value.substring(0, 5)
                 : e.target.value
-            );
-
-            if (await hasBadWords(e.target.value)) {
-              setIsContainProfanity(true);
-            } else {
-              if (isContainProfanity) {
-                setIsContainProfanity(false);
-              }
-            }
-          }}
+            )
+          }
           type="text"
-          color={isContainProfanity ? "danger" : ""}
           label="상단 출력 문구"
         />
 
-        {isContainProfanity ? (
-          <p className="text-sm text-[#f31261] text-center">
-            타인에게 불쾌감을 주는 문구는 입력할 수 없습니다.
-          </p>
-        ) : null}
+        {/*
+          경고 문구
+        <Input
+          value={title.length > 5 ? title.substring(0, 5) : title}
+          onChange={(e) =>
+            setTitle(
+              e.target.value.length > 5
+                ? e.target.value.substring(0, 5)
+                : e.target.value
+            )
+          }
+          color="danger"
+          type="text"
+          label="상단 출력 문구"
+        />
+
+        <p className="text-sm text-[#f31261] text-center">
+          타인에게 불쾌감을 주는 문구는 입력할 수 없습니다.
+        </p> */}
 
         <div className="flex gap-x-5 justify-center items-center w-full">
           {templateNumber === "0" && (
@@ -354,10 +357,7 @@ export const EditPhase = ({
 
           {templateNumber === "0" && (
             <Button
-              className={`bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem] ${
-                isContainProfanity ? "opacity-25" : ""
-              }`}
-              disabled={isContainProfanity}
+              className="bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
               onClick={handleSaveImage}
             >
               저장하기
