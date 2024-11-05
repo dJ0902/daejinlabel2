@@ -40,6 +40,14 @@ export const CompletePhase = ({
             </p>
 
             <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
+              <div className="outline-text flex flex-col justify-center items-center text-sm">
+                <p className="text-[15px] mb-1">
+                  #마이라벨<span className="mx-1">#나만의처음처럼</span>
+                  #개인소장용
+                </p>
+                <p>소장용 SNS 활용이 가능하오니</p>
+                <p>라벨을 재밌게 꾸며주세요! (상업적 사용 불가)</p>
+              </div>
               <Button
                 className="w-2/3 bg-white border-white text-gray-500 font-['ChumChurumTitle'] pb-[0.1rem]"
                 color="default"
@@ -87,6 +95,15 @@ export const CompletePhase = ({
           />
 
           <div className="flex flex-col gap-y-2 my-2 justify-center items-center ">
+            <div className="outline-text flex flex-col justify-center items-center text-sm">
+              <p className="text-[15px] mb-1">
+                #마이라벨<span className="mx-1">#나만의처음처럼</span>
+                #개인소장용
+              </p>
+              <p>소장용 SNS 활용이 가능하오니</p>
+              <p>라벨을 재밌게 꾸며주세요! (상업적 사용 불가)</p>
+            </div>
+
             <Button
               className="w-2/3 animate-pulse bg-panton-500 text-white font-['ChumChurumTitle'] pb-[0.1rem]"
               color="primary"

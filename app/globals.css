@@ -105,3 +105,8 @@
 body {
   font-family: 'ChumChurumText';
 }
+
+.outline-text {
+  color: white;
+  text-shadow: -1px -1px 0 #298a43, 1px -1px 0 #298a43, -1px 1px 0 #298a43, 1px 1px 0 #298a43;
+}
